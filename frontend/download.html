@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070b16">
+  <meta name="description" content="Baixe o JARVES AI: APK Android, instalador Windows e AppImage Linux publicados nas Releases oficiais.">
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+  <title>BAXAI Downloads · JARVES AI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070b16;
+      --card: #10182c;
+      --line: #2a3b63;
+      --text: #e8f1ff;
+      --muted: #9db0cf;
+      --apk: #6bcf8c;
+      --exe: #5eaeff;
+      --app: #c4a6ff;
+      --accent: #36d6c2;
+      font: 16px/1.55 system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 50% -10%, #1b2d5c 0%, transparent 52%),
+        linear-gradient(180deg, #0a1224, var(--bg));
+    }
+    a { color: #9eb6ff; }
+    .wrap { width: min(1100px, 100% - 32px); margin: 0 auto; padding: 28px 0 72px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .brand { display: flex; gap: 10px; align-items: center; color: #fff; text-decoration: none; font-weight: 800; letter-spacing: .08em; }
+    .brand img { width: 42px; height: 42px; border-radius: 12px; }
+    .back { border: 1px solid #ffffff30; border-radius: 999px; padding: 8px 14px; text-decoration: none; }
+    .hero { text-align: center; padding: clamp(36px, 8vw, 80px) 0 20px; }
+    .eyebrow { color: var(--accent); font-size: .72rem; font-weight: 800; letter-spacing: .18em; }
+    h1 { margin: 8px 0; font-size: clamp(2.1rem, 7vw, 4.2rem); letter-spacing: -.05em; line-height: 1.05; }
+    .intro { max-width: 640px; margin: 0 auto; color: var(--muted); }
+    .notice, .card, .reqs {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--card) 88%, transparent);
+    }
+    .notice { margin: 22px auto; padding: 16px 18px; text-align: left; color: var(--muted); }
+    .notice strong { display: block; color: #fff; margin-bottom: 4px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .card { min-height: 280px; padding: 20px; display: flex; flex-direction: column; }
+    .icon {
+      width: 64px; height: 70px; border-radius: 18px; display: grid; place-items: center;
+      margin-bottom: 14px; font-size: 11px; font-weight: 800; letter-spacing: .04em;
+    }
+    .icon img { width: 36px; height: 36px; }
+    .apk { color: var(--apk); background: #6bcf8c18; }
+    .exe { color: var(--exe); background: #5eaeff18; }
+    .app { color: var(--app); background: #c4a6ff18; }
+    .badge { font-size: .72rem; font-weight: 800; color: #d7e6ff; }
+    h2 { margin: 6px 0 8px; font-size: 1.25rem; }
+    .card p { color: var(--muted); margin: 0 0 12px; }
+    .assets { margin-top: auto; padding: 0; list-style: none; }
+    .assets li { margin-top: 10px; color: var(--muted); font-size: .9rem; }
+    .btn {
+      display: none; align-items: center; justify-content: center; min-height: 44px;
+      padding: 0 16px; border-radius: 12px; background: #7787ff; color: #fff;
+      font-weight: 800; text-decoration: none;
+    }
+    .btn.is-ready { display: inline-flex; }
+    .reqs { margin-top: 22px; padding: 20px; }
+    footer { margin-top: 28px; text-align: center; color: #7f91b0; font-size: .88rem; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <a class="brand" href="./"><img src="assets/icon-192.png" alt=""> JARVES · BAXAI</a>
+      <a class="back" href="./">Abrir o app</a>
+    </header>
+    <section class="hero">
+      <p class="eyebrow">CENTRO DE DOWNLOADS · FONTES OFICIAIS</p>
+      <h1>APK, EXE e AppImage</h1>
+      <p class="intro">Os botões só aparecem quando o GitHub publica um arquivo real na Release. Ícones oficiais do JARVES acompanham cada pacote nativo.</p>
+      <p id="release-status" role="status" aria-live="polite">Consultando as Releases oficiais…</p>
+    </section>
+    <aside class="notice">
+      <strong>Sem links inventados</strong>
+      APK, EXE e AppImage saem das Releases de <code>p59784166-cloud/jarves</code>. Se o arquivo ainda não existir, esta página diz isso em vez de fingir o download.
+    </aside>
+    <section class="grid" aria-label="Downloads por sistema">
+      <article class="card">
+        <div class="icon apk"><img src="assets/icon-192.png" alt=""><span>APK</span></div>
+        <span class="badge">ANDROID</span>
+        <h2>Cliente Android</h2>
+        <p>WebView com o ícone do launcher JARVES. Precisa do servidor do PC na mesma rede. Não executa Ollama no celular.</p>
+        <ul class="assets">
+          <li id="apk-status">Procurando app-debug.apk…</li>
+          <li><a id="apk-link" class="btn">Baixar APK</a></li>
+        </ul>
+      </article>
+      <article class="card">
+        <div class="icon exe"><img src="assets/icon-192.png" alt=""><span>EXE</span></div>
+        <span class="badge">WINDOWS x64</span>
+        <h2>Instalador NSIS</h2>
+        <p>Usa o ícone <code>icon.ico</code>. Sem assinatura de código: o SmartScreen pode avisar.</p>
+        <ul class="assets">
+          <li id="exe-status">Procurando instalador Windows…</li>
+          <li><a id="exe-link" class="btn">Baixar EXE</a></li>
+        </ul>
+      </article>
+      <article class="card">
+        <div class="icon app"><img src="assets/icon-192.png" alt=""><span>AppImage</span></div>
+        <span class="badge">LINUX x86_64</span>
+        <h2>AppImage</h2>
+        <p>Usa o ícone <code>icon.png</code>. Marque o arquivo como executável depois de baixar.</p>
+        <ul class="assets">
+          <li id="app-status">Procurando AppImage…</li>
+          <li><a id="app-link" class="btn">Baixar AppImage</a></li>
+        </ul>
+      </article>
+    </section>
+    <section class="reqs">
+      <h2>Requisitos</h2>
+      <ul>
+        <li>Android 7 ou superior para o APK de depuração.</li>
+        <li>Windows 10/11 64 bits para o instalador Electron.</li>
+        <li>Linux x86_64 com FUSE para o AppImage.</li>
+        <li>Ollama e modelos continuam no computador; o APK só abre a interface.</li>
+      </ul>
+    </section>
+    <footer>JARVES AI · downloads oficiais · BAXAI</footer>
+  </main>
+  <script>
+    const repository = 'p59784166-cloud/jarves';
+    const apkStatus = document.getElementById('apk-status');
+    const exeStatus = document.getElementById('exe-status');
+    const appStatus = document.getElementById('app-status');
+    const globalStatus = document.getElementById('release-status');
+    const apkLink = document.getElementById('apk-link');
+    const exeLink = document.getElementById('exe-link');
+    const appLink = document.getElementById('app-link');
+
+    function attach(asset, link) {
+      if (!asset || typeof asset.browser_download_url !== 'string') return false;
+      try {
+        const url = new URL(asset.browser_download_url);
+        if (url.protocol !== 'https:' || url.hostname !== 'github.com') return false;
+        link.href = url.href;
+        link.download = asset.name;
+        link.classList.add('is-ready');
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    fetch(`https://api.github.com/repos/${repository}/releases/latest`, {
+      headers: { Accept: 'application/vnd.github+json' },
+      cache: 'no-store',
+    }).then(async (response) => {
+      if (!response.ok) {
+        throw new Error(response.status === 404
+          ? 'Ainda não há Release publicado neste repositório.'
+          : `GitHub respondeu HTTP ${response.status}.`);
+      }
+      return response.json();
+    }).then((release) => {
+      const assets = release.assets || [];
+      const apk = assets.find((asset) => asset.name === 'app-debug.apk');
+      const exe = assets.find((asset) => /^JARVES-AI-Setup-.+-x64\.exe$/i.test(asset.name));
+      const appImage = assets.find((asset) => /^JARVES-AI-.+-x86_64\.AppImage$/i.test(asset.name));
+      const date = release.published_at ? new Date(release.published_at).toLocaleDateString('pt-BR') : 'data indisponível';
+      const label = `Versão ${release.tag_name} · ${date}`;
+      globalStatus.textContent = label;
+      apkStatus.textContent = attach(apk, apkLink) ? `${label} · ${apk.name}` : `${label} · APK ainda não publicado.`;
+      exeStatus.textContent = attach(exe, exeLink) ? `${label} · ${exe.name}` : `${label} · EXE ainda não publicado.`;
+      appStatus.textContent = attach(appImage, appLink) ? `${label} · ${appImage.name}` : `${label} · AppImage ainda não publicado.`;
+    }).catch((error) => {
+      globalStatus.textContent = error.message;
+      apkStatus.textContent = 'APK indisponível até existir uma Release com o arquivo.';
+      exeStatus.textContent = 'EXE indisponível até existir uma Release com o arquivo.';
+      appStatus.textContent = 'AppImage indisponível até existir uma Release com o arquivo.';
+    });
+  </script>
+</body>
+</html>
