@@ -5,7 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const root = path.dirname(fileURLToPath(import.meta.url));
 
 test('JARVES_EXECUTOR.html e gerado como arquivo unico, sem referencias externas', () => {
   execFileSync(process.execPath, [path.join(root, 'scripts/build-executor.mjs')], { stdio: 'pipe' });
