@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 android {
     namespace 'com.jarves.ai'
@@ -8,12 +9,20 @@ android {
         applicationId 'com.jarves.ai'
         minSdk 24
         targetSdk 35
-        versionCode 238
-        versionName '2.3.8'
+        versionCode 240
+        versionName '2.4.0'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    packaging {
+        jniLibs {
+            pickFirsts += ['**/liblitertlm_jni.so']
+        }
     }
     buildTypes {
         debug {
@@ -22,4 +31,5 @@ android {
     }
 }
 dependencies {
+    implementation 'com.google.ai.edge.litertlm:litertlm-android:0.19.0'
 }
