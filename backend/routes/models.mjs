@@ -5,6 +5,25 @@ import { getSetting } from '../../database/repositories/settingsRepository.mjs';
 
 const router = express.Router();
 
+// Diagnóstico leve: apenas consulta Ollama; nunca baixa ou instala modelos.
+router.get('/health', async (_req, res) => {
+  const result = await listAvailableModels('ollama');
+  const selected = result.selected || 'qwen2.5:3b';
+  const modelAvailable = result.models.some(model => model.id === selected);
+  res.json({
+    provider: 'ollama',
+    status: result.error ? 'offline' : 'online',
+    available: !result.error,
+    selectedModel: selected,
+    modelAvailable,
+    modelsCount: result.models.length,
+    models: result.models.map(({ id, name, size, modified }) => ({ id, name, size, modified })),
+    error: result.error,
+    downloadRequired: !result.error && !modelAvailable,
+    automaticDownload: false,
+  });
+});
+
 router.get('/', async (req, res) => {
   const provider = req.query.provider || null;
   const result = await listAvailableModels(provider);

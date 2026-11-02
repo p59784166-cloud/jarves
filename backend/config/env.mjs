@@ -29,7 +29,7 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   AI_PROVIDER: process.env.AI_PROVIDER || 'auto',
   OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434',
-  OLLAMA_MODEL: process.env.OLLAMA_MODEL || 'qwen3.5:4b',
+  OLLAMA_MODEL: process.env.OLLAMA_MODEL || 'qwen2.5:3b',
   OLLAMA_TIMEOUT_MS: num('OLLAMA_TIMEOUT_MS', 120000),
   OPENAI_COMPAT_BASE_URL: process.env.OPENAI_COMPAT_BASE_URL || '',
   OPENAI_COMPAT_API_KEY: process.env.OPENAI_COMPAT_API_KEY || '',

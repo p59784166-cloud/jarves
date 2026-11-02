@@ -1187,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const fields = [
         { key: 'ai_provider', label: 'Provedor ativo', type: 'select', options: ['auto','ollama','openai-compatible','base','mock'] },
         { key: 'ollama_base_url', label: 'Endereço do Ollama', type: 'url', placeholder: 'http://127.0.0.1:11434' },
-        { key: 'ollama_model', label: 'Modelo Ollama', type: 'text', placeholder: 'qwen3.5:4b' },
+        { key: 'ollama_model', label: 'Modelo Ollama', type: 'text', placeholder: 'qwen2.5:3b' },
         { key: 'openai_base_url', label: 'Endpoint compatível', type: 'url', placeholder: 'https://api.exemplo.com/v1' },
         { key: 'openai_model', label: 'Modelo remoto', type: 'text', placeholder: 'nome-do-modelo' },
         { key: 'ai_timeout_ms', label: 'Tempo limite (ms)', type: 'number' },

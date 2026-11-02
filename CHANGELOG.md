@@ -109,3 +109,13 @@ Revisao completa do codigo (nao havia uma lista pronta de bugs). Detalhes e o qu
 - Cabeçalho JSON enviado apenas quando há corpo; respostas HTTP exibem mensagens mais claras.
 - IDs de recursos codificados nas rotas da API.
 - Atualizadas instruções para acesso mobile pela mesma origem do backend.
+
+
+## Preparação Evolution / Coder / Brain (não publicada)
+- Adicionados perfis de comportamento selecionáveis no Chat e persistidos localmente no navegador.
+- Adicionada API `GET /api/profiles` para listar perfis disponíveis.
+- Adicionado diagnóstico `GET /api/models/health` para verificar conexão/modelos Ollama sem iniciar downloads.
+- Validado o identificador do perfil e limitado o tamanho das instruções personalizadas no endpoint de chat.
+- Alinhado o modelo Ollama padrão para `qwen2.5:3b` em configurações novas. Configurações já salvas não são sobrescritas.
+- Testes novos cobrem catálogo de perfis, validação de perfil e diagnóstico Ollama.
+- Esta preparação ainda precisa passar pela suíte completa e não foi publicada no GitHub.

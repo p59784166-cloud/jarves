@@ -44,6 +44,15 @@ O modo **Servidor** continua opcional e conecta a interface web do JARVES/Ollama
 
 A descoberta usa mDNS (`_jarves._tcp`) e só é anunciada quando o backend escuta em todas as interfaces ou num endereço local privado. O APK não liga o Wi-Fi nem ingressa numa rede protegida; ambos os aparelhos precisam estar na mesma rede local e a rede deve permitir tráfego entre dispositivos. A versão desktop instalada mantém o backend limitado a `127.0.0.1`; para conectar o APK, inicie o servidor Node em modo LAN conforme o passo 1.
 
+## JARVIS Evolution / Brain / Coder — melhorias desta preparação
+- O perfil da IA pode ser escolhido no próprio Chat: Geral, Programador, Pesquisador, Professor, Planejador, Analista ou Criador. A seleção fica salva localmente no navegador.
+- O backend valida o perfil e limita instruções personalizadas antes de montar o contexto do modelo. O endpoint `GET /api/profiles` lista os perfis suportados.
+- O endpoint `GET /api/models/health` verifica se o Ollama responde, lista modelos disponíveis e informa se o modelo selecionado está instalado. A verificação não baixa modelos.
+- O padrão de configuração do Ollama foi alinhado para `qwen2.5:3b` em instalações novas. Um modelo já salvo nas Configurações continua respeitado.
+- O fluxo de programação existente continua baseado em geração/analise e revisão: o JARVES não executa código gerado automaticamente nem altera arquivos do projeto sem aprovação.
+
+Exemplo de diagnóstico local: `GET http://127.0.0.1:3000/api/models/health`.
+
 ## IA sem cobrança por uso
 - Escolha **Ollama local** (ou **Automático**) em Configurações e instale um modelo compatível. A inferência fica no seu PC/servidor e não exige uma chave de API paga.
 - O download inicial precisa de internet e ocupa espaço em disco; a execução usa memória, processador/placa de vídeo e energia do seu equipamento. A licença de cada modelo pode variar.

@@ -2,13 +2,20 @@ import express from 'express';
 import * as CR from '../../database/repositories/conversationRepository.mjs';
 import { chatOnce, streamOnce, resolveRuntime } from '../services/aiService.mjs';
 import { buildMessages } from '../services/aiService.mjs';
+import { composeSystemPrompt } from '../../ai/core/profiles.mjs';
 
 const router = express.Router();
 const active = new Map(); // requestId -> AbortController
 
 router.post('/', async (req, res) => {
-  const { conversationId, message, provider, model, systemPrompt, stream } = req.body || {};
+  const { conversationId, message, provider, model, systemPrompt, profile = 'general', stream } = req.body || {};
   if (!message || typeof message !== 'string') return res.status(400).json({ error: 'message obrigatorio' });
+  if (typeof profile !== 'string' || !['general', 'programmer', 'researcher', 'studies', 'planner', 'reviewer', 'creator'].includes(profile)) {
+    return res.status(400).json({ error: 'Perfil de IA invalido.' });
+  }
+  if (systemPrompt !== undefined && (typeof systemPrompt !== 'string' || systemPrompt.length > 8000)) {
+    return res.status(400).json({ error: 'systemPrompt deve ser texto com ate 8000 caracteres.' });
+  }
 
   // Valida tudo ANTES de gravar qualquer coisa (antes, um 409 deixava a mensagem do usuario duplicada).
   const requestId = (typeof req.body?.requestId === 'string' && req.body.requestId.trim())
@@ -27,7 +34,7 @@ router.post('/', async (req, res) => {
   // Historico lido antes de gravar a nova mensagem.
   const hist = CR.listMessages(convId).filter(m => !m.error).map(m => ({ role: m.role, content: m.content }));
   CR.addMessage({ conversationId: convId, role: 'user', content: message, model, provider });
-  const messages = buildMessages(systemPrompt || null, hist, message);
+  const messages = buildMessages(composeSystemPrompt(profile, systemPrompt || ''), hist, message);
 
   const controller = new AbortController();
   active.set(requestId, controller);

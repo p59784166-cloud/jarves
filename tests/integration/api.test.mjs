@@ -179,3 +179,39 @@ test('research endpoint handles failure gracefully', async () => {
   const j = await r.json();
   assert.ok(j);
 });
+
+
+test('profiles endpoint returns supported assistant profiles', async () => {
+  const r = await fetch(baseUrl + '/api/profiles');
+  assert.equal(r.status, 200);
+  const j = await r.json();
+  assert.ok(j.profiles.some(profile => profile.id === 'programmer'));
+  assert.ok(j.profiles.some(profile => profile.id === 'planner'));
+});
+
+test('chat rejects unknown AI profiles before creating a conversation', async () => {
+  const r = await fetch(baseUrl + '/api/chat', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: 'teste', profile: 'root-admin', stream: false }),
+  });
+  assert.equal(r.status, 400);
+  assert.match((await r.json()).error, /Perfil de IA invalido/);
+});
+
+test('Ollama health endpoint reports connection and never starts model downloads', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    assert.match(String(url), /\/api\/tags$/);
+    return new Response(JSON.stringify({ models: [{ name: 'qwen2.5:3b', size: 123 }] }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+  try {
+    const r = await fetch(baseUrl + '/api/models/health');
+    assert.equal(r.status, 200);
+    const j = await r.json();
+    assert.equal(j.status, 'online');
+    assert.equal(j.modelAvailable, true);
+    assert.equal(j.automaticDownload, false);
+  } finally { globalThis.fetch = originalFetch; }
+});
