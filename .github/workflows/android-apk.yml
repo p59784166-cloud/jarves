@@ -39,13 +39,17 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Read app version
+        id: app-version
+        run: |
+          node -e 'require("node:fs").appendFileSync(process.env.GITHUB_OUTPUT, "value=" + require("./package.json").version + "\n")'
       - name: Build debug APK
         working-directory: android
         run: gradle --no-daemon :app:assembleDebug
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: JARVES-AI-2.3.7-Android-APK
+          name: JARVES-AI-${{ steps.app-version.outputs.value }}-Android-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Publish APK release

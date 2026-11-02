@@ -1,0 +1,53 @@
+name: Validate JARVES
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'ai/**'
+      - 'android/**'
+      - 'backend/**'
+      - 'database/**'
+      - 'desktop/**'
+      - 'executor/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    paths:
+      - 'ai/**'
+      - 'android/**'
+      - 'backend/**'
+      - 'database/**'
+      - 'desktop/**'
+      - 'executor/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Check source syntax
+        run: npm run check
+      - name: Run tests
+        run: npm test -- --test-reporter=dot
