@@ -13,7 +13,12 @@ test('frontend index exists and has key controls', () => {
   const navigation = html.match(/<nav class="tool-nav primary-nav"[\s\S]*?<\/nav>/)?.[0] || '';
   assert.deepEqual([...navigation.matchAll(/data-view="([^"]+)"/g)].map(match => match[1]), ['chat']);
   const chatTools = html.match(/<section class="chat-tools[\s\S]*?<\/section>/)?.[0] || '';
-  assert.deepEqual([...chatTools.matchAll(/data-chat-tool="([^"]+)"/g)].map(match => match[1]), ['gerador', 'voice-studio', 'html-tests', 'reports', 'agents', 'tasks', 'files', 'memory', 'settings']);
+  assert.deepEqual([...chatTools.matchAll(/data-chat-tool="([^"]+)"/g)].map(match => match[1]), ['gerador', 'voice-studio', 'html-tests', 'reports', 'agents', 'tasks', 'files', 'memory', 'roblox-studio', 'settings']);
+  for (const id of ['view-roblox-studio','btnRobloxPair','robloxBridgeAddress','robloxBridgeToken','btnCopyRobloxToken','robloxScriptName','robloxScriptTarget','robloxScriptSource','btnQueueRobloxScript']) {
+    assert.ok(html.includes(`id="${id}"`), 'missing Roblox Studio control ' + id);
+  }
+  assert.match(html, /Plugins → Save as Local Plugin/);
+  assert.match(html, /Wine não é suportado oficialmente/);
   for (const id of ['btnChatTools','btnCloseChatTools','btnBackToChat','chatTools','btnVoice','voiceCommandStatus']) assert.ok(html.includes(`id="${id}"`), 'missing unified chat control ' + id);
   assert.match(html, /id="view-html-tests"[\s\S]*id="btnRunHtmlTests"/);
   const generator = fs.readFileSync(path.join(root, 'frontend/scripts/gerador.js'), 'utf8');
@@ -28,6 +33,15 @@ test('frontend index exists and has key controls', () => {
     assert.ok(html.includes(`id="${id}"`), 'missing preference/diagnostic control ' + id);
   }
   const appScript = fs.readFileSync(path.join(root, 'frontend/scripts/app.js'), 'utf8');
+  const robloxScript = fs.readFileSync(path.join(root, 'frontend/scripts/roblox-studio.js'), 'utf8');
+  const robloxPlugin = fs.readFileSync(path.join(root, 'frontend/roblox-plugin/JARVESStudioPlugin.lua'), 'utf8');
+  assert.match(robloxScript, /robloxPair\(\)/);
+  assert.match(robloxScript, /robloxQueue\(token/);
+  assert.match(robloxPlugin, /Insert into Studio/);
+  assert.match(robloxPlugin, /ChangeHistoryService:SetWaypoint/);
+  assert.match(robloxPlugin, /ServerScriptService/);
+  assert.match(robloxPlugin, /StarterPlayerScripts/);
+  assert.match(robloxPlugin, /ReplicatedStorage/);
   assert.match(appScript, /api\.downloadFile\(url\)/);
   assert.match(html, /Hospedar o backend e executar a IA dentro do próprio Android ainda não é suportado/);
   for (const command of ['enviar','limpar texto','novo chat','parar resposta']) assert.ok(html.includes(command), `missing voice command hint: ${command}`);
@@ -89,9 +103,9 @@ test('Android launcher icons target the declared activity and expose only packag
   const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   const androidBuild = fs.readFileSync(path.join(root, 'android/app/build.gradle'), 'utf8');
   const environment = fs.readFileSync(path.join(root, 'backend/config/env.mjs'), 'utf8');
-  assert.equal(packageJson.version, '2.3.7');
-  assert.match(androidBuild, /versionCode 237[\s\S]*versionName '2\.3\.7'/);
-  assert.match(environment, /APP_VERSION = '2\.3\.7'/);
+  assert.equal(packageJson.version, '2.3.8');
+  assert.match(androidBuild, /versionCode 238[\s\S]*versionName '2\.3\.8'/);
+  assert.match(environment, /APP_VERSION = '2\.3\.8'/);
   const manifest = fs.readFileSync(path.join(root, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
   for (const permission of ['INTERNET', 'ACCESS_NETWORK_STATE', 'ACCESS_WIFI_STATE', 'CHANGE_NETWORK_STATE', 'CHANGE_WIFI_MULTICAST_STATE', 'RECORD_AUDIO']) {
     assert.match(manifest, new RegExp(`android:name="android\\.permission\\.${permission}"`));
