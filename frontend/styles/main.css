@@ -50,6 +50,20 @@
 
 .suggestions[hidden]{display:none!important}
 
+/* Full workspace navigation, optimized for touch screens */
+.sidebar{overflow-y:auto;overscroll-behavior:contain}
+.sidebar-section-label{margin:8px 9px 6px;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:1.5px}
+.workspace-nav{gap:2px}
+.workspace-nav .nav-btn{width:100%;min-height:38px;padding:8px 10px}
+.workspace-nav .nav-btn.active{box-shadow:inset 2px 0 var(--accent)}
+.preferences-label{margin-top:14px}
+.new-chat{flex:0 0 auto}
+.sidebar-bottom{position:sticky;bottom:0;background:var(--panel);margin-top:auto}
+@media(max-width:850px){
+  .sidebar{overscroll-behavior:contain}
+  .workspace-nav .nav-btn{min-height:42px}
+}
+
 /* Local/free AI onboarding and current provider status */
 .local-ai-card{margin:0 0 16px;padding:12px;background:color-mix(in srgb,var(--accent2) 8%,var(--panel));border:1px solid color-mix(in srgb,var(--accent2) 30%,var(--line));border-radius:12px}
 .local-ai-badge{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--accent2)}
