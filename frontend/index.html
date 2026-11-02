@@ -16,7 +16,7 @@
 <div class="app-shell">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <a class="brand" href="/" aria-label="JARVES AI início"><span class="brand-mark" id="brandMark">J</span><span><b id="brandName">JARVES AI</b><small>2.3.7 · MEGA UPDATE</small></span></a>
+      <a class="brand" href="/" aria-label="JARVES AI início"><span class="brand-mark" id="brandMark">J</span><span><b id="brandName">JARVES AI</b><small>2.3.8 · ROBLOX STUDIO</small></span></a>
       <button class="icon-btn mobile-close" id="btnCloseSidebar" aria-label="Fechar menu">×</button>
     </div>
     <nav class="tool-nav primary-nav" aria-label="Navegação principal">
@@ -30,7 +30,7 @@
       <div class="side-label">CONVERSAS</div>
       <nav class="sidebar-nav" id="convList" aria-label="Conversas"></nav>
     </div>
-    <div class="sidebar-bottom"><span class="online-dot"></span><span id="aiRuntimeStatus" role="status">Verificando provedor de IA...</span><small>v2.3.7</small></div>
+    <div class="sidebar-bottom"><span class="online-dot"></span><span id="aiRuntimeStatus" role="status">Verificando provedor de IA...</span><small>v2.3.8</small></div>
   </aside>
   <button class="overlay" id="overlay" aria-label="Fechar menu"></button>
   <main class="main">
@@ -47,7 +47,7 @@
     </header>
     <section class="view view-chat" id="view-chat">
       <div class="chat-area" id="chatArea" role="log" aria-live="polite">
-        <div class="welcome" id="welcomePanel"><div class="welcome-orb" id="welcomeOrb">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.3.7</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div></div>
+        <div class="welcome" id="welcomePanel"><div class="welcome-orb" id="welcomeOrb">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.3.8</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div></div>
       </div>
       <section class="chat-tools panel" id="chatTools" aria-label="Ferramentas do Chat" hidden>
         <div class="row html-test-toolbar"><div><h3>Ferramentas do Chat</h3><p class="muted-copy">Abra recursos sem sair do espaço principal do Chat.</p></div><button class="icon-btn" id="btnCloseChatTools" type="button" aria-label="Fechar ferramentas">×</button></div>
@@ -60,6 +60,7 @@
           <button type="button" data-chat-tool="tasks"><strong>◷ Tarefas</strong><small>Planejar e acompanhar etapas</small></button>
           <button type="button" data-chat-tool="files"><strong>▤ Arquivos e código</strong><small>Importar, revisar e analisar</small></button>
           <button type="button" data-chat-tool="memory"><strong>◈ Memória</strong><small>Notas e contexto persistente</small></button>
+          <button type="button" data-chat-tool="roblox-studio"><strong>◉ Roblox Studio</strong><small>Conexão local e envio de scripts com aprovação</small></button>
           <button type="button" data-chat-tool="settings"><strong>⚙ Configurações</strong><small>Voz, visual, IA e preferências</small></button>
         </div>
       </section>
@@ -108,6 +109,35 @@
     <section class="view content-view" id="view-tasks" hidden><div class="page-heading"><p class="eyebrow">ORGANIZAÇÃO</p><h1>Planejamento de tarefas</h1><p>Transforme objetivos em etapas organizadas.</p></div><div class="panel"><textarea id="taskGoal" placeholder="Descreva seu objetivo..."></textarea><div class="row"><button class="primary-btn" id="btnPlan">Criar planejamento</button><button class="secondary-btn" id="btnRunTask">Criar e executar</button></div><pre id="planPreview" class="result-box"></pre></div><h3>Tarefas</h3><div id="taskList" class="list"></div></section>
     <section class="view content-view" id="view-files" hidden><div class="page-heading"><p class="eyebrow">ESPAÇO DE TRABALHO</p><h1>Arquivos e código</h1><p>Importe arquivos, baixe links públicos ou peça uma análise de código.</p></div><div class="panel"><h3>Baixar um arquivo da rede</h3><p class="muted-copy">Cole um link público HTTP/HTTPS para salvar PDF, imagem, áudio, vídeo, ZIP ou outro arquivo. O tamanho máximo segue o limite configurado para uploads. Endereços locais e privados são bloqueados.</p><label for="networkFileUrl">Link do arquivo</label><input id="networkFileUrl" type="url" inputmode="url" placeholder="https://exemplo.com/arquivo.pdf" autocomplete="url"><div class="row"><button class="primary-btn" id="btnDownloadNetworkFile" type="button">Baixar arquivo</button><span id="networkDownloadStatus" class="status" role="status" aria-live="polite"></span></div></div><div class="panel"><h3>Importar deste dispositivo</h3><input type="file" id="fileInput" multiple><button class="primary-btn" id="btnUpload">Importar arquivos</button><div id="uploadStatus" class="status"></div></div><div id="fileList" class="list"></div><div class="panel"><h3>Analisar código</h3><textarea id="codeInput" placeholder="Cole seu código aqui..."></textarea><button class="primary-btn" id="btnAnalyzeCode">Analisar código</button><pre id="codeAnalysis" class="result-box"></pre></div></section>
     <section class="view content-view" id="view-memory" hidden><div class="page-heading"><p class="eyebrow">CONTEXTO PERSISTENTE</p><h1>Memória</h1><p>Organize informações úteis para suas conversas.</p></div><div class="panel"><input id="memSubject" placeholder="Assunto"><textarea id="memContent" placeholder="Conteúdo..."></textarea><select id="memKind"><option value="note">Nota</option><option value="preference">Preferência</option><option value="fact">Fato</option></select><button class="primary-btn" id="btnSaveMem">Salvar memória</button></div><input type="search" id="memSearch" placeholder="Pesquisar memória..."><div id="memList" class="list"></div></section>
+    <section class="view content-view" id="view-roblox-studio" hidden>
+      <div class="page-heading"><p class="eyebrow">INTEGRAÇÃO LOCAL</p><h1>Roblox Studio</h1><p>Envie código Luau do JARVES ao plugin local; o Studio sempre pede sua confirmação antes de inserir.</p></div>
+      <div class="panel">
+        <h3>1 · Parear este computador</h3>
+        <p class="muted-copy">Gere um token local, copie-o para o plugin JARVES Studio Bridge e use o endereço mostrado aqui. O token vale somente enquanto este servidor estiver aberto, só aceita conexões locais e renová-lo descarta scripts ainda pendentes.</p>
+        <div class="row"><button class="primary-btn" id="btnRobloxPair" type="button">Gerar / renovar token</button><button class="secondary-btn" id="btnCopyRobloxToken" type="button" disabled>Copiar token</button></div>
+        <label for="robloxBridgeAddress">Endereço local deste JARVES</label><input id="robloxBridgeAddress" readonly>
+        <label for="robloxBridgeToken">Token para colar no plugin</label><input id="robloxBridgeToken" type="password" readonly autocomplete="off">
+        <div id="robloxBridgeStatus" class="status" role="status" aria-live="polite">Gere um token para começar.</div>
+      </div>
+      <div class="panel">
+        <h3>2 · Enviar um script Luau</h3>
+        <p class="muted-copy">Revise o código antes de enviar. O JARVES não executa scripts: o plugin mostra uma prévia e só cria o objeto no Studio após você clicar em “Inserir no Studio”.</p>
+        <label for="robloxScriptName">Nome</label><input id="robloxScriptName" maxlength="48" value="JARVESScript" autocomplete="off">
+        <label for="robloxScriptTarget">Destino e tipo</label><select id="robloxScriptTarget"><option value="ServerScriptService">Script · ServerScriptService</option><option value="StarterPlayerScripts">LocalScript · StarterPlayerScripts</option><option value="ReplicatedStorage">ModuleScript · ReplicatedStorage</option></select>
+        <label for="robloxScriptSource">Código Luau (máx. 64 KB)</label><textarea id="robloxScriptSource" maxlength="65536" spellcheck="false" placeholder="Cole aqui o código Luau gerado ou revisado..."></textarea>
+        <div class="row"><button class="primary-btn" id="btnQueueRobloxScript" type="button" disabled>Enviar para o plugin</button><span id="robloxQueueStatus" class="status" role="status" aria-live="polite"></span></div>
+      </div>
+      <div class="panel">
+        <h3>Instalação e suporte Linux</h3>
+        <ol>
+          <li>Baixe o <a href="/roblox-plugin/JARVESStudioPlugin.lua" download>código do plugin JARVES Studio Bridge</a>.</li>
+          <li>No Roblox Studio, crie um Script, cole o arquivo, selecione-o no Explorer e use <strong>Plugins → Save as Local Plugin</strong>.</li>
+          <li>Ative solicitações HTTP em <strong>File → Experience Settings → Security → Allow HTTP Requests</strong> e permita o acesso local quando solicitado.</li>
+          <li>Abra o plugin, cole o endereço e token acima, conecte e aprove cada inserção no próprio Studio.</li>
+        </ol>
+        <p class="muted-copy">A Roblox oferece Studio oficialmente para Windows e macOS, não Linux. No Linux, essa ponte pode funcionar com Studio executado via Wine, mas Wine não é suportado oficialmente e atualizações podem quebrar compatibilidade. JARVES e o plugin não instalam nem iniciam o Studio.</p>
+      </div>
+    </section>
     <section class="view content-view" id="view-reports" hidden><div class="page-heading"><p class="eyebrow">QUALIDADE DO SISTEMA</p><h1>Relatórios e correções</h1></div><div class="row"><a class="secondary-btn" href="/diagnostico" target="_blank" rel="noopener">Abrir relatório HTML ↗</a><button class="primary-btn" id="btnRefreshReports">Atualizar</button></div><div id="resolvedBugs" class="list"></div><pre id="reportRaw" class="result-box"></pre></section>
     <section class="view content-view settings-view" id="view-settings" hidden>
       <div class="page-heading"><p class="eyebrow">SEU ASSISTENTE</p><h1>Configurações</h1><p>Personalize a identidade, a voz, as cores e o provedor de IA.</p></div>
@@ -169,7 +199,7 @@
     </section>
   </main>
 </div>
-<script src="/scripts/api.js"></script><script src="/scripts/state.js"></script><script src="/scripts/ui.js"></script><script src="/scripts/particles.js"></script><script src="/scripts/app.js"></script><script src="/scripts/base-engine.js"></script><script src="/scripts/gerador.js"></script><script src="/scripts/html-tests.js"></script>
+<script src="/scripts/api.js"></script><script src="/scripts/state.js"></script><script src="/scripts/ui.js"></script><script src="/scripts/particles.js"></script><script src="/scripts/app.js"></script><script src="/scripts/base-engine.js"></script><script src="/scripts/gerador.js"></script><script src="/scripts/html-tests.js"></script><script src="/scripts/roblox-studio.js"></script>
 <script>
 document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{const i=document.getElementById('input');i.value=b.dataset.prompt;i.focus();}));
 </script>
