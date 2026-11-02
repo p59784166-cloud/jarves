@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         speechVoice: typeof saved.speechVoice === 'string' ? saved.speechVoice : '',
         speechRate: Number.isFinite(saved.speechRate) ? Math.min(1.3, Math.max(0.7, saved.speechRate)) : 1,
         speechPitch: Number.isFinite(saved.speechPitch) ? Math.min(1.3, Math.max(0.7, saved.speechPitch)) : 1,
+        responseSound: saved.responseSound !== false,
       };
     } catch {
       return { aiName: 'JARVES AI', avatar: '', accent: '#7c8cff', rgb: false, speechLanguage: 'pt-BR', speechVoice: '', speechRate: 1, speechPitch: 1 };
@@ -61,12 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function openSidebar() {
     sidebar.classList.add('open');
     overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
     menuButton.setAttribute('aria-expanded', 'true');
     document.getElementById('btnCloseSidebar').focus();
   }
   function closeSidebar(restoreFocus = false) {
     sidebar.classList.remove('open');
     overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden', 'true');
     menuButton.setAttribute('aria-expanded', 'false');
     if (restoreFocus) menuButton.focus();
   }
@@ -149,6 +152,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btnBackToChat').addEventListener('click', () => setView('chat'));
   document.getElementById('chatTools').addEventListener('click', event => {
+    if (event.target.closest('[data-chat-action="images"]')) {
+      document.getElementById('chatImageTool').hidden = !document.getElementById('chatImageTool').hidden;
+      document.getElementById('chatImageStatus').textContent = '';
+      return;
+    }
     const button = event.target.closest('[data-chat-tool]');
     if (!button) return;
     setView(button.dataset.chatTool);
@@ -221,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!state.messages.length) {
       const welcome = document.createElement('div');
       welcome.className = 'welcome';
-      welcome.innerHTML = '<div class="welcome-orb" aria-hidden="true">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · V1000</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div>';
+      welcome.innerHTML = '<div class="welcome-orb" aria-hidden="true">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.4.1</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div>';
       area.appendChild(welcome);
       applyPreferences();
       welcome.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => {
@@ -290,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const text = input.value.trim();
     if (!text) return;
     if (state.generating) return;
+    prepareResponseSound();
     input.value = '';
     saveDraft('');
     // ensure conversation
@@ -371,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (stopped) bubble.body.innerHTML = renderMarkdown(full) + '\n\n[geracao interrompida]';
       state.messages.push({ role: 'assistant', content: full, model: finalModel, provider: finalProvider });
+      if (!stopped) playResponseSound();
       // meta
         const meta = document.createElement('div');
       meta.className = 'msg-meta';
@@ -403,6 +413,99 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputEl = document.getElementById('input');
   inputEl.value = loadDraft();
   inputEl.addEventListener('input', () => saveDraft(inputEl.value));
+  const soundButton = document.getElementById('btnSound');
+  let responseAudioContext = null;
+  function prepareResponseSound() {
+    if (!preferences.responseSound) return;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+      voiceCommandStatus.textContent = 'Som de resposta indisponível neste navegador.';
+      return;
+    }
+    try {
+      responseAudioContext ||= new AudioContextClass();
+      if (responseAudioContext.state === 'suspended') {
+        responseAudioContext.resume().catch(error => {
+          voiceCommandStatus.textContent = `Não foi possível iniciar o som: ${error.message}`;
+        });
+      }
+    } catch (error) {
+      voiceCommandStatus.textContent = `Não foi possível iniciar o som: ${error.message}`;
+    }
+  }
+  function playResponseSound() {
+    if (!preferences.responseSound || !responseAudioContext || responseAudioContext.state !== 'running') return;
+    try {
+      const start = responseAudioContext.currentTime;
+      for (const [offset, frequency] of [[0, 587.33], [0.12, 783.99]]) {
+        const oscillator = responseAudioContext.createOscillator();
+        const gain = responseAudioContext.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.0001, start + offset);
+        gain.gain.exponentialRampToValueAtTime(0.045, start + offset + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.1);
+        oscillator.connect(gain);
+        gain.connect(responseAudioContext.destination);
+        oscillator.start(start + offset);
+        oscillator.stop(start + offset + 0.11);
+        oscillator.addEventListener('ended', () => {
+          oscillator.disconnect();
+          gain.disconnect();
+        }, { once: true });
+      }
+    } catch (error) {
+      voiceCommandStatus.textContent = `Não foi possível tocar o som: ${error.message}`;
+    }
+  }
+  soundButton.setAttribute('aria-pressed', String(preferences.responseSound));
+  soundButton.setAttribute('aria-label', preferences.responseSound ? 'Desativar som de resposta' : 'Ativar som de resposta');
+  soundButton.textContent = preferences.responseSound ? '🔊 Som' : '🔇 Som';
+  soundButton.addEventListener('click', () => {
+    preferences.responseSound = !preferences.responseSound;
+    soundButton.setAttribute('aria-pressed', String(preferences.responseSound));
+    soundButton.setAttribute('aria-label', preferences.responseSound ? 'Desativar som de resposta' : 'Ativar som de resposta');
+    soundButton.textContent = preferences.responseSound ? '🔊 Som' : '🔇 Som';
+    if (savePreferences()) voiceCommandStatus.textContent = preferences.responseSound ? 'Som de resposta ativado.' : 'Som de resposta desativado.';
+  });
+  const chatImageButton = document.getElementById('btnGenerateChatImage');
+  chatImageButton.addEventListener('click', async () => {
+    const prompt = document.getElementById('chatImagePrompt').value.trim();
+    const status = document.getElementById('chatImageStatus');
+    if (!prompt) {
+      status.textContent = 'Descreva a imagem que deseja gerar.';
+      document.getElementById('chatImagePrompt').focus();
+      return;
+    }
+    const size = Number(document.getElementById('chatImageSize').value);
+    chatImageButton.disabled = true;
+    status.textContent = 'Gerando PNG no modelo local; isso pode levar alguns minutos...';
+    try {
+      const result = await api.generateImage({ prompt, width: size, height: size, steps: 20 });
+      if (typeof result?.image !== 'string' || !result.image) throw new Error('O gerador não retornou uma imagem válida.');
+      const figure = document.createElement('figure');
+      figure.className = 'msg assistant generated-image-message';
+      const image = document.createElement('img');
+      image.src = `data:image/png;base64,${result.image}`;
+      image.alt = `Imagem gerada: ${prompt}`;
+      image.loading = 'lazy';
+      const caption = document.createElement('figcaption');
+      caption.textContent = `Imagem gerada com ${result.model || 'Automatic1111/Forge local'} · ${size} × ${size}`;
+      const save = document.createElement('a');
+      save.className = 'secondary-btn';
+      save.href = image.src;
+      save.download = 'jarves-imagem-gerada.png';
+      save.textContent = 'Baixar PNG';
+      figure.append(image, caption, save);
+      document.getElementById('chatArea').appendChild(figure);
+      document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+      status.textContent = 'Imagem pronta e adicionada à conversa. Baixe o PNG para mantê-lo.';
+    } catch (error) {
+      status.textContent = `Falha ao gerar imagem: ${error.message}`;
+    } finally {
+      chatImageButton.disabled = false;
+    }
+  });
 
   document.getElementById('btnStop').addEventListener('click', async () => {
     if (state.currentRequestId) {
