@@ -76,7 +76,10 @@ router.get('/:id/content', (req, res) => {
 
 router.post('/analyze', (req, res) => {
   const { code, language } = req.body || {};
-  res.json(FS.analyzeCodeSnippet(code || '', language));
+  if (typeof code !== 'string') return res.status(400).json({ error: 'code deve ser texto' });
+  if (code.length > 500_000) return res.status(413).json({ error: 'Código excede o limite de 500.000 caracteres para análise' });
+  if (language !== undefined && typeof language !== 'string') return res.status(400).json({ error: 'language deve ser texto' });
+  res.json(FS.analyzeCodeSnippet(code, language));
 });
 
 router.delete('/:id', (req, res) => {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.4.2
+- Geração de projetos de código estruturados, com validação de manifesto, nomes, extensões, conteúdo e limites antes da exportação.
+- Análise estática de sintaxe JavaScript e JSON sem executar o código enviado; linguagens sem verificador compatível são identificadas claramente.
+- Preferências de resposta e instruções personalizadas aplicadas ao chat, com comandos rápidos documentados na interface.
+- Atualizados os metadados de versão para os próximos builds Android, Windows e Linux.
+
 ## 2.4.1
 - Menu lateral simplificado; as ferramentas agora são acessadas pelo painel Atalhos no Chat.
 - Geração de imagens PNG integrada à conversa pelo Automatic1111/Forge local, com prévia e download em 512, 768 ou 1024 px.

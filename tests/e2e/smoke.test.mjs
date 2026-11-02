@@ -29,19 +29,31 @@ test('frontend index exists and has key controls', () => {
   assert.match(html, /id="view-html-tests"[\s\S]*id="btnRunHtmlTests"/);
   const generator = fs.readFileSync(path.join(root, 'frontend/scripts/gerador.js'), 'utf8');
   assert.match(generator, /value="modelo-3d"/);
+  assert.match(generator, /value="codigo">Projeto de código com IA/);
+  for (const language of ['html','css','javascript','typescript','python','java','c','cpp','php','json','xml','gdscript','shell']) {
+    assert.ok(generator.includes(`value="${language}"`), `missing code generator language ${language}`);
+  }
+  assert.match(generator, /parseGeneratedCodeProject/);
   assert.match(generator, /Automatic1111\/Forge/);
   assert.match(generator, /generateImage\(\{ prompt, width: 768, height: 768, steps: 20 \}\)/);
   assert.match(generator, /encoding: 'base64'/);
   assert.match(generator, /provider: 'ollama'/);
   assert.doesNotMatch(generator, /nav\.insertBefore/);
   assert.match(navigation, /href="\/download\.html"/);
-  for (const id of ['aiDisplayName','accentColor','rgbMode','aiAvatarInput','aiAvatarPreview','btnResetAiAvatar','launcherIcon','launcherIconStatus','androidServerPanel','androidServerUrl','btnConnectAndroidServer','androidServerStatus','speechLanguage','speechVoice','speechRate','speechPitch','btnTestVoice','btnRunHtmlTests','btnRunDiag','repairInput','repairFile','btnAskFix','workflowGoal','btnWorkflowResearch','btnWorkflowPlan','btnWorkflowCreate','btnWorkflowExecute','btnWorkflowPreview','workflowPreview','studioNarration','studioVideoFile','studioVideo','btnSpeakNarration','btnPlayAndSpeak']) {
+  for (const id of ['aiDisplayName','accentColor','rgbMode','aiAvatarInput','aiAvatarPreview','btnResetAiAvatar','launcherIcon','launcherIconStatus','responseStyle','customInstructions','btnSaveAiBehavior','aiBehaviorStatus','androidServerPanel','androidServerUrl','btnConnectAndroidServer','androidServerStatus','speechLanguage','speechVoice','speechRate','speechPitch','btnTestVoice','btnRunHtmlTests','btnRunDiag','repairInput','repairFile','btnAskFix','workflowGoal','btnWorkflowResearch','btnWorkflowPlan','btnWorkflowCreate','btnWorkflowExecute','btnWorkflowPreview','workflowPreview','studioNarration','studioVideoFile','studioVideo','btnSpeakNarration','btnPlayAndSpeak']) {
     assert.ok(html.includes(`id="${id}"`), 'missing preference/diagnostic control ' + id);
   }
   const appScript = fs.readFileSync(path.join(root, 'frontend/scripts/app.js'), 'utf8');
   assert.match(appScript, /api\.generateImage\(\{ prompt, width: size, height: size, steps: 20 \}\)/);
   assert.match(appScript, /generated-image-message/);
   assert.match(appScript, /playResponseSound\(\)/);
+  assert.match(appScript, /systemPrompt: buildPersonalizationPrompt\(\)/);
+  assert.match(appScript, /function handleChatCommand\(text\)/);
+  for (const command of ['/ajuda','/tema','/cor','/voz','/estilo','/nome','/instrucoes','/som','/modelo']) {
+    assert.ok(appScript.includes(command), `missing chat customization command ${command}`);
+  }
+  assert.match(appScript, /customInstructions: typeof saved\.customInstructions === 'string' \? saved\.customInstructions\.slice\(0, 1200\)/);
+  assert.match(appScript, /responseStyle: \['concise', 'balanced', 'detailed', 'code'\]/);
   const robloxScript = fs.readFileSync(path.join(root, 'frontend/scripts/roblox-studio.js'), 'utf8');
   const robloxPlugin = fs.readFileSync(path.join(root, 'frontend/roblox-plugin/JARVESStudioPlugin.lua'), 'utf8');
   assert.match(robloxScript, /robloxPair\(\)/);
@@ -75,7 +87,7 @@ test('download page only enables APK, EXE, and AppImage downloads from a publish
   assert.match(html, /href="#download-options"/);
   assert.match(html, /href="https:\/\/github\.com\/p59784166-cloud\/jarves\/releases\/latest"/);
   assert.match(html, /Sem links inventados/);
-  assert.match(html, /api\.github\.com\/repos\/\$\{repository\}\/releases\/latest/);
+  assert.match(html, /fetch\('\.\/release-assets\.json'/);
   assert.match(html, /asset\.name === 'app-debug\.apk'/);
   assert.match(html, /id="exe-link"/);
   assert.match(html, /JARVES-AI-Setup-.*x64\\\.exe/);
@@ -117,9 +129,9 @@ test('Android launcher icons target the declared activity and expose only packag
   const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   const androidBuild = fs.readFileSync(path.join(root, 'android/app/build.gradle'), 'utf8');
   const environment = fs.readFileSync(path.join(root, 'backend/config/env.mjs'), 'utf8');
-  assert.equal(packageJson.version, '2.4.1');
-  assert.match(androidBuild, /versionCode 241[\s\S]*versionName '2\.4\.1'/);
-  assert.match(environment, /APP_VERSION = '2\.4\.1'/);
+  assert.equal(packageJson.version, '2.4.2');
+  assert.match(androidBuild, /versionCode 242[\s\S]*versionName '2\.4\.2'/);
+  assert.match(environment, /APP_VERSION = '2\.4.2'/);
   const manifest = fs.readFileSync(path.join(root, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
   for (const permission of ['INTERNET', 'ACCESS_NETWORK_STATE', 'ACCESS_WIFI_STATE', 'CHANGE_NETWORK_STATE', 'CHANGE_WIFI_MULTICAST_STATE', 'RECORD_AUDIO']) {
     assert.match(manifest, new RegExp(`android:name="android\\.permission\\.${permission}"`));
@@ -176,6 +188,9 @@ test('GitHub Pages workflow publishes the downloads page as the site root', () =
   assert.match(workflow, /branches: \[main\]/);
   assert.match(workflow, /cp frontend\/download\.html public\/index\.html/);
   assert.match(workflow, /cp frontend\/assets\/JERVER_AI_V1000_ICON_ARTWORK\.png public\/assets\/JERVER_AI_V1000_ICON_ARTWORK\.png/);
+  assert.match(workflow, /workflow_run:[\s\S]*Build JARVES Android APK[\s\S]*Build JARVES Windows EXE[\s\S]*Build JARVES Linux AppImage/);
+  assert.match(workflow, /releases\/latest/);
+  assert.match(workflow, /public\/release-assets\.json/);
   assert.match(workflow, /actions\/upload-pages-artifact@v3/);
   assert.match(workflow, /actions\/deploy-pages@v4/);
 });

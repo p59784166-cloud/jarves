@@ -196,14 +196,12 @@
       }
     }
 
-    fetch(`./release-assets.json`, {
+    fetch('./release-assets.json', {
       headers: { Accept: 'application/json' },
       cache: 'no-store',
     }).then(async (response) => {
       if (!response.ok) {
-        throw new Error(response.status === 404
-          ? 'A lista de downloads ainda não foi publicada no site.'
-          : `Falha ao carregar a lista de downloads (HTTP ${response.status}).`);
+        throw new Error(`Não foi possível carregar a lista atual de downloads (HTTP ${response.status}).`);
       }
       return response.json();
     }).then((release) => {

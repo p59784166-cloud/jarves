@@ -6,11 +6,12 @@
 
   const sec = document.createElement('section');
   sec.className = 'view content-view'; sec.id = 'view-gerador'; sec.hidden = true;
-  sec.innerHTML = '<div class="page-heading"><p class="eyebrow">GERAÇÃO LOCAL · SEM API PAGA</p><h1>Gerador</h1><p>Crie ilustrações 2D, modelos 3D e experiências HTML para visualizar, baixar ou salvar.</p></div>' +
-    '<div class="panel"><label>O que criar?<textarea id="genPrompt" placeholder="Ex.: paisagem ao pôr do sol · modelo 3D de um cilindro azul · experiência interativa de um planeta"></textarea></label>' +
-    '<div class="row"><select id="genType" aria-label="Tipo"><option value="auto">Automático</option><option value="imagem">Imagem 2D (SVG offline ou PNG por IA)</option><option value="modelo-3d">Modelo 3D (OBJ/GLB)</option><option value="experiencia">Projeto 2D + 3D + HTML interativo</option><option value="jogo">Jogo HTML</option><option value="site">Site (HTML+CSS+JS)</option><option value="app-todo">App: tarefas</option><option value="app-calc">App: calculadora</option></select>' +
+  sec.innerHTML = '<div class="page-heading"><p class="eyebrow">GERAÇÃO LOCAL · SEM API PAGA</p><h1>Gerador</h1><p>Crie projetos de código, ilustrações 2D, modelos 3D e experiências HTML para visualizar, baixar ou salvar.</p></div>' +
+    '<div class="panel"><label>O que criar?<textarea id="genPrompt" maxlength="4000" placeholder="Ex.: paisagem ao pôr do sol · modelo 3D de um cilindro azul · experiência interativa de um planeta"></textarea></label>' +
+    '<div class="row"><select id="genType" aria-label="Tipo"><option value="auto">Automático</option><option value="codigo">Projeto de código com IA</option><option value="imagem">Imagem 2D (SVG offline ou PNG por IA)</option><option value="modelo-3d">Modelo 3D (OBJ/GLB)</option><option value="experiencia">Projeto 2D + 3D + HTML interativo</option><option value="jogo">Jogo HTML</option><option value="site">Site (HTML+CSS+JS)</option><option value="app-todo">App: tarefas</option><option value="app-calc">App: calculadora</option></select>' +
+    '<select id="genLanguage" aria-label="Linguagem do projeto" hidden><option value="html">HTML</option><option value="css">CSS</option><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option><option value="python">Python</option><option value="java">Java</option><option value="c">C</option><option value="cpp">C++</option><option value="php">PHP</option><option value="json">JSON</option><option value="xml">XML</option><option value="gdscript">GDScript</option><option value="shell">Shell</option></select>' +
     '<select id="genEngine" aria-label="Motor"><option value="base">Motor local (offline)</option><option value="ia">Ollama local (gratuito, se configurado)</option><option value="image-ai">IA de imagem local (Automatic1111/Forge)</option></select>' +
-    '<button class="primary-btn" id="genGo" type="button">✦ Gerar</button></div><p class="muted-copy">O motor offline gera formas e ilustrações simples sem internet. Ollama é opcional, sem cobrança de API; exige instalar e executar um modelo local, com consumo de hardware e energia.</p></div>' +
+    '<button class="primary-btn" id="genGo" type="button">✦ Gerar</button></div><p class="muted-copy">O motor offline gera formas e ilustrações simples sem internet. A geração de código usa Ollama local, não executa nem compila os arquivos e exige revisar o resultado. O modelo usa hardware e energia do seu equipamento.</p></div>' +
     '<details class="panel"><summary>Configurar IA de imagem local (grátis)</summary><p class="muted-copy">Conecte um Automatic1111 ou Forge instalado no computador que executa o servidor JARVES. Inicie o motor com a API habilitada (por exemplo, <code>--api</code>). A geração não usa API paga, mas exige baixar um modelo e recursos de hardware; o desempenho depende do seu equipamento.</p><label for="genImageUrl">Endereço local do motor</label><input id="genImageUrl" type="url" inputmode="url" placeholder="http://127.0.0.1:7860"><div class="row"><button class="secondary-btn" id="genImageSave" type="button">Salvar endereço</button><button class="secondary-btn" id="genImageTest" type="button">Testar conexão</button><span id="genImageConfigStatus" class="status" role="status" aria-live="polite"></span></div></details>' +
     '<div class="panel" id="genOut" hidden><h3>Plano</h3><ol id="genPlan"></ol><h3>Arquivos</h3><div class="list" id="genFiles"></div>' +
     '<div class="row"><button class="secondary-btn" id="genZip" type="button">⇩ Baixar tudo (.zip)</button><button class="secondary-btn" id="genSave" type="button">▤ Salvar em Arquivos</button><button class="secondary-btn" id="genPng" type="button" hidden>🖼 Baixar PNG</button></div>' +
@@ -20,6 +21,11 @@
   const $ = (id) => document.getElementById(id);
   let current = null;
   const status = (t) => { $('genStatus').textContent = t; };
+  $('genType').addEventListener('change', () => {
+    const codeMode = $('genType').value === 'codigo';
+    $('genLanguage').hidden = !codeMode;
+    if (codeMode) $('genEngine').value = 'ia';
+  });
   const fileBytes = (file) => {
     if (file?.encoding === 'base64') {
       const binary = atob(file.content);
@@ -116,14 +122,19 @@
   });
 
   // ---- IA do Ollama: pede o HTML e extrai o codigo ----
-  async function viaIA(prompt, type) {
+  async function viaIA(prompt, type, language = 'html') {
     const meshRequest = type === 'modelo-3d';
+    const codeRequest = type === 'codigo';
     const sys = meshRequest
       ? 'Responda SOMENTE JSON válido, sem markdown: {"shape":"cube|sphere|cylinder|cone","color":"#RRGGBB","segments":16}. Escolha uma forma simples adequada ao pedido. segments deve estar entre 8 e 32.'
-      : 'Você gera um projeto web autocontido. Responda SOMENTE com um bloco ```html contendo UM arquivo HTML completo, responsivo e sem dependências externas, scripts remotos ou chamadas de rede. Sem explicações.';
+      : codeRequest
+        ? `Gere um projeto inicial funcional na linguagem ${language}. Responda SOMENTE JSON válido, sem markdown, no formato {"plan":["etapa"],"files":[{"name":"arquivo.ext","content":"conteúdo textual"}]}. Inclua de 1 a 20 arquivos de texto, pelo menos um arquivo-fonte da linguagem solicitada e um README.md com instruções de revisão/execução. Use apenas nomes de arquivos simples sem pastas, caminhos absolutos ou "..". Não inclua binários, dependências baixadas, segredos ou comandos para execução automática. Não afirme que o código foi compilado ou testado.`
+        : 'Você gera um projeto web autocontido. Responda SOMENTE com um bloco ```html contendo UM arquivo HTML completo, responsivo e sem dependências externas, scripts remotos ou chamadas de rede. Sem explicações.';
     const task = meshRequest
       ? 'Escolha parâmetros para um modelo 3D simples baseado nesta descrição: '
-      : 'Crie uma experiência HTML interativa sobre: ';
+      : codeRequest
+        ? 'Crie um projeto de programação para o seguinte pedido: '
+        : 'Crie uma experiência HTML interativa sobre: ';
     const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: task + prompt, systemPrompt: sys, stream: false, provider: 'ollama' }) });
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || 'falha na IA');
@@ -139,6 +150,28 @@
         model: j.model || 'Ollama local',
       };
     }
+    if (codeRequest) {
+      const { parseGeneratedCodeProject } = await import('./codeProject.mjs');
+      const project = parseGeneratedCodeProject(j.content || '', language);
+      if (['javascript', 'json'].includes(language)) {
+        const extension = language === 'json' ? '.json' : null;
+        const sourceFiles = project.files.filter(file => extension
+          ? file.name.toLowerCase().endsWith(extension)
+          : /\.(?:js|mjs|cjs)$/i.test(file.name));
+        if (sourceFiles.length) {
+          try {
+            const reports = await Promise.all(sourceFiles.map(file => window.api.analyzeCode(file.content, language)));
+            const issues = reports.flatMap((report, index) => report.issues.map(issue => `${sourceFiles[index].name}${issue.line ? `:${issue.line}` : ''}: ${issue.message}`));
+            project.validationNote = issues.length
+              ? `Verificação estática encontrou ${issues.length} aviso(s): ${issues.slice(0, 3).join(' · ')}`
+              : `Sintaxe ${language === 'json' ? 'JSON' : 'JavaScript'} verificada sem erros; nenhum código foi executado.`;
+          } catch (error) {
+            project.validationNote = `Análise sintática indisponível: ${error.message}`;
+          }
+        }
+      }
+      return { ...project, model: j.model || 'Ollama local' };
+    }
     const m = String(j.content || '').match(/```(?:html)?\s*([\s\S]*?)```/i);
     const code = (m ? m[1] : j.content || '').trim();
     if (!/<html|<!doctype|<svg|<canvas|<body/i.test(code)) throw new Error('A IA não devolveu HTML utilizável (modelo ' + (j.model || '?') + ').');
@@ -150,6 +183,7 @@
     if (!prompt) { status('Escreva o que quer criar.'); $('genOut').hidden = false; return; }
     const selectedType = $('genType').value;
     const type = selectedType === 'auto' ? window.JARVES_BASE.generate(prompt, 'auto').type : selectedType;
+    const language = $('genLanguage').value;
     $('genGo').disabled = true; status('Gerando...'); $('genOut').hidden = false;
     try {
       let res, note = '';
@@ -163,6 +197,11 @@
           files: [{ name: 'imagem-gerada.png', mime: 'image/png', encoding: 'base64', content: generated.image }],
         };
         note = 'Imagem gerada no modelo local ' + (generated.model || 'Automatic1111/Forge') + '. A inferência ocorreu no computador/servidor configurado; nenhum serviço pago foi chamado.';
+      } else if (type === 'codigo') {
+        if ($('genEngine').value !== 'ia') throw new Error('Selecione “Ollama local” para gerar código. O motor offline não inventa código para outras linguagens.');
+        const generated = await viaIA(prompt, type, language);
+        res = generated;
+        note = `Projeto gerado pelo modelo local ${generated.model}. ${generated.validationNote || 'Os arquivos não foram executados nem compilados.'} Revise-os antes de usar.`;
       } else if ($('genEngine').value === 'ia' && type === 'modelo-3d') {
         try {
           const spec = await viaIA(prompt, type);
@@ -196,12 +235,22 @@
   $('genSave').addEventListener('click', async () => {
     if (!current) return;
     let n = 0;
-    let failed = 0;
+    const failures = [];
     for (const f of current.files) {
       const bytes = fileBytes(f); let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-      try { const r = await fetch('/api/files/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: f.name, mime: f.mime || 'text/plain', data: btoa(bin) }) }); if (r.ok) n++; else failed++; } catch { failed++; }
+      try {
+        const response = await fetch('/api/files/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: f.name, mime: f.mime || 'text/plain', data: btoa(bin) }) });
+        if (response.ok) n++;
+        else {
+          let reason = `HTTP ${response.status}`;
+          try { reason = (await response.json()).error || reason; } catch {}
+          failures.push(`${f.name}: ${reason}`);
+        }
+      } catch (error) {
+        failures.push(`${f.name}: ${error.message || 'falha de rede'}`);
+      }
     }
-    status(n + ' arquivo(s) salvo(s) em "Arquivos e código"' + (failed ? `; ${failed} falha(s) ao salvar.` : '.'));
+    status(`${n} arquivo(s) salvo(s) em "Arquivos e código"${failures.length ? `; falha(s): ${failures.slice(0, 3).join(' · ')}` : '.'}`);
   });
   $('genPng').addEventListener('click', () => {
     const svg = current && current.files.find(f => f.name.endsWith('.svg')); if (!svg) return;

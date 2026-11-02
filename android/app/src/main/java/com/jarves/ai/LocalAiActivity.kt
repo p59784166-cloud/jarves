@@ -428,7 +428,7 @@ class LocalAiActivity : Activity() {
             connectTimeout = 20_000
             readTimeout = 60_000
             instanceFollowRedirects = true
-            setRequestProperty("User-Agent", "JARVES-AI-Android/2.4.1")
+            setRequestProperty("User-Agent", "JARVES-AI-Android/2.4.2")
             if (offset > 0L) setRequestProperty("Range", "bytes=$offset-")
         }
         activeConnection = connection

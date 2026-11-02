@@ -75,6 +75,29 @@ test('file upload and read', async () => {
   await fetch(baseUrl + '/api/files/' + uj.id, { method: 'DELETE' });
 });
 
+test('code analyzer validates request shape and reports syntax diagnostics', async () => {
+  const invalid = await fetch(baseUrl + '/api/files/analyze', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: { source: 'not text' } }),
+  });
+  assert.equal(invalid.status, 400);
+
+  const analyzed = await fetch(baseUrl + '/api/files/analyze', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: 'const value = ;', language: 'javascript' }),
+  });
+  assert.equal(analyzed.status, 200);
+  const report = await analyzed.json();
+  assert.equal(report.syntaxCheck, 'failed');
+  assert.equal(report.issues[0].line, 1);
+
+  const tooLarge = await fetch(baseUrl + '/api/files/analyze', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: 'x'.repeat(500_001) }),
+  });
+  assert.equal(tooLarge.status, 413);
+});
+
 test('cancel endpoint 404 for unknown', async () => {
   const r = await fetch(baseUrl + '/api/chat/cancel', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },

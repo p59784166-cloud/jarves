@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
+import { spawnSync } from 'node:child_process';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env, resolvePath } from '../config/env.mjs';
@@ -141,18 +143,98 @@ export function createFileReadStream(id) {
 
 export function analyzeCodeSnippet(code, language = 'auto') {
   const issues = [];
-  if (!code) return { issues, summary: 'Codigo vazio' };
+  if (typeof code !== 'string') return { issues: [{ severity: 'high', message: 'O conteúdo precisa ser texto', line: null, column: null }], summary: 'Entrada inválida', lineCount: 0, syntaxCheck: 'not-checked' };
+  if (!code) return { issues, summary: 'Codigo vazio', lineCount: 0, syntaxCheck: 'not-checked' };
   const lines = code.split(/\n/);
-  // basic checks
-  if (/\beval\s*\(/.test(code)) issues.push({ severity: 'high', message: 'Uso de eval detectado' });
-  if (/password\s*=\s*['"][^'"]+['"]/.test(code)) issues.push({ severity: 'high', message: 'Possivel segredo hardcoded' });
-  if (/TODO|FIXME/.test(code)) issues.push({ severity: 'low', message: 'TODO/FIXME encontrado' });
-  if (lines.length > 1000) issues.push({ severity: 'medium', message: 'Arquivo muito longo, considere modularizar' });
-  // bracket balance
-  const open = (code.match(/[{[(]/g) || []).length;
-  const close = (code.match(/[}\])]/g) || []).length;
-  if (Math.abs(open - close) > 5) issues.push({ severity: 'medium', message: 'Possivel desbalanceamento de parenteses/chaves' });
-  return { issues, lineCount: lines.length, summary: issues.length ? `${issues.length} problema(s) potencial(is)` : 'Nenhum problema obvio detectado' };
+  const addIssue = (severity, message, index = -1) => {
+    const before = index < 0 ? '' : code.slice(0, index);
+    const line = index < 0 ? null : before.split('\n').length;
+    const column = index < 0 ? null : index - before.lastIndexOf('\n');
+    issues.push({ severity, message, line, column });
+  };
+  const normalizedLanguage = String(language || 'auto').toLowerCase();
+  const isJson = ['json', 'application/json'].includes(normalizedLanguage)
+    || (normalizedLanguage === 'auto' && /^[\s]*[\[{]/.test(code) && /["'][^"'{}\n]+["']\s*:/.test(code));
+  const isJavaScript = ['js', 'javascript', 'mjs', 'cjs', 'node'].includes(normalizedLanguage)
+    || (normalizedLanguage === 'auto' && /\b(?:const|let|var|function|class|import|export|await)\b|=>|\beval\s*\(/.test(code));
+  let syntaxCheck = 'not-checked';
+
+  if (isJson) {
+    try {
+      JSON.parse(code);
+      syntaxCheck = 'passed';
+    } catch (error) {
+      syntaxCheck = 'failed';
+      const positionMatch = error.message.match(/position\s+(\d+)/i);
+      const context = error.message.match(/^Unexpected token '[^']*', "([\s\S]*)" is not valid JSON$/)?.[1];
+      const token = error.message.match(/^Unexpected token '([^']*)'/)?.[1];
+      const contextIndex = context ? code.indexOf(context) : -1;
+      const index = positionMatch
+        ? Number(positionMatch[1])
+        : contextIndex >= 0 && token
+          ? contextIndex + context.indexOf(token)
+          : /Unexpected end/i.test(error.message)
+            ? code.length
+            : token
+              ? code.lastIndexOf(token)
+              : -1;
+      addIssue('high', `Erro de sintaxe JSON: ${error.message.split(' at position ')[0]}`, index);
+    }
+  } else if (isJavaScript) {
+    syntaxCheck = 'passed';
+    const isModule = /^\s*(?:import\s|export\s|await\b)/m.test(code);
+    if (!isModule) {
+      try {
+        new vm.Script(code, { filename: 'codigo-analisado.js' });
+      } catch (error) {
+        syntaxCheck = 'failed';
+        const match = error.stack?.match(/codigo-analisado\.js:(\d+)/);
+        const line = match ? Number(match[1]) : null;
+        const sourceLines = error.stack?.split('\n') || [];
+        const marker = match ? sourceLines.findIndex(item => item.includes(`codigo-analisado.js:${match[1]}`)) : -1;
+        const column = marker >= 0 ? (sourceLines[marker + 2]?.indexOf('^') ?? -1) + 1 : null;
+        issues.push({ severity: 'high', message: `Erro de sintaxe JavaScript: ${error.message.split('\n')[0]}`, line, column: column > 0 ? column : null });
+      }
+    } else {
+      const checked = spawnSync(process.execPath, ['--check', '--input-type=module'], {
+        input: code,
+        encoding: 'utf8',
+        timeout: 5000,
+        maxBuffer: 1024 * 1024,
+      });
+      if (checked.error) {
+        syntaxCheck = 'unavailable';
+        addIssue('medium', `Não foi possível verificar a sintaxe do módulo: ${checked.error.message}`);
+      } else if (checked.status !== 0) {
+        syntaxCheck = 'failed';
+        const output = checked.stderr || checked.stdout || '';
+        const line = Number(output.match(/\[stdin\]:(\d+)/)?.[1]) || null;
+        const rows = output.split('\n');
+        const marker = line ? rows.findIndex(item => item.startsWith(`[stdin]:${line}`)) : -1;
+        const column = marker >= 0 ? (rows[marker + 2]?.indexOf('^') ?? -1) + 1 : null;
+        const message = output.match(/SyntaxError: ([^\n]+)/)?.[1] || 'Código inválido';
+        issues.push({ severity: 'high', message: `Erro de sintaxe JavaScript: ${message}`, line, column: column > 0 ? column : null });
+      }
+    }
+  }
+
+  const addPatternIssue = (pattern, severity, message) => {
+    const match = pattern.exec(code);
+    if (match) addIssue(severity, message, match.index);
+  };
+  addPatternIssue(/\beval\s*\(/, 'high', 'Uso de eval detectado');
+  addPatternIssue(/\bpassword\s*=\s*['"][^'"]+['"]/i, 'high', 'Possivel segredo hardcoded');
+  addPatternIssue(/\b(?:TODO|FIXME)\b/, 'low', 'TODO/FIXME encontrado');
+  if (lines.length > 1000) addIssue('medium', 'Arquivo muito longo, considere modularizar');
+  const checkedLanguage = isJson ? 'json' : isJavaScript ? 'javascript' : normalizedLanguage;
+  const syntaxNote = syntaxCheck === 'not-checked' ? ' (sintaxe nao validada para esta linguagem)' : '';
+  return {
+    issues,
+    lineCount: lines.length,
+    language: checkedLanguage,
+    syntaxCheck,
+    summary: issues.length ? `${issues.length} problema(s) potencial(is)` : `Nenhum problema obvio detectado${syntaxNote}`,
+  };
 }
 
 function classify(mime, name) {

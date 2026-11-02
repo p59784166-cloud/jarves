@@ -56,7 +56,7 @@ const api = {
   fileDownloadUrl: (id) => '/api/files/' + idPath(id) + '/download',
   deleteFile: (id) => request('/api/files/' + idPath(id), { method: 'DELETE' }),
   fileContent: (id) => request('/api/files/' + idPath(id) + '/content'),
-  analyzeCode: (code) => request('/api/files/analyze', { method: 'POST', body: { code } }),
+  analyzeCode: (code, language = 'auto') => request('/api/files/analyze', { method: 'POST', body: { code, language } }),
   listAgents: () => request('/api/tasks/agents'),
   plan: (goal, context = {}) => request('/api/tasks/plan', { method: 'POST', body: { goal, ...context } }),
   createTask: (payload) => request('/api/tasks', { method: 'POST', body: payload }),

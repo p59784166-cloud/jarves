@@ -12,10 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
         speechVoice: typeof saved.speechVoice === 'string' ? saved.speechVoice : '',
         speechRate: Number.isFinite(saved.speechRate) ? Math.min(1.3, Math.max(0.7, saved.speechRate)) : 1,
         speechPitch: Number.isFinite(saved.speechPitch) ? Math.min(1.3, Math.max(0.7, saved.speechPitch)) : 1,
+        responseStyle: ['concise', 'balanced', 'detailed', 'code'].includes(saved.responseStyle) ? saved.responseStyle : 'balanced',
+        customInstructions: typeof saved.customInstructions === 'string' ? saved.customInstructions.slice(0, 1200) : '',
         responseSound: saved.responseSound !== false,
       };
     } catch {
-      return { aiName: 'JARVES AI', avatar: '', accent: '#7c8cff', rgb: false, speechLanguage: 'pt-BR', speechVoice: '', speechRate: 1, speechPitch: 1 };
+      return { aiName: 'JARVES AI', avatar: '', accent: '#7c8cff', rgb: false, speechLanguage: 'pt-BR', speechVoice: '', speechRate: 1, speechPitch: 1, responseStyle: 'balanced', customInstructions: '', responseSound: true };
     }
   })();
   function applyAvatar(element, fallback) {
@@ -229,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!state.messages.length) {
       const welcome = document.createElement('div');
       welcome.className = 'welcome';
-      welcome.innerHTML = '<div class="welcome-orb" aria-hidden="true">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.4.1</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div>';
+      welcome.innerHTML = '<div class="welcome-orb" aria-hidden="true">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.4.2</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div>';
       area.appendChild(welcome);
       applyPreferences();
       welcome.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => {
@@ -293,11 +295,104 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Send message
+  function showChatCommandHelp() {
+    toast('/ajuda · /tema escuro|claro · /cor #hex · /voz pt-BR|pt-PT|en-US|es-ES · /estilo breve|equilibrado|detalhado|codigo · /nome texto · /instrucoes texto · /som ligar|desligar · /modelo nome', 'info');
+  }
+  function handleChatCommand(text) {
+    if (!text.startsWith('/')) return false;
+    const [rawCommand, ...parts] = text.trim().split(/\s+/);
+    const command = rawCommand.slice(1).toLowerCase();
+    const value = parts.join(' ').trim();
+    const status = (message, type = 'info') => toast(message, type);
+    if (['ajuda', 'help', '?'].includes(command)) {
+      showChatCommandHelp();
+      return true;
+    }
+    if (command === 'tema') {
+      const theme = value.toLowerCase();
+      if (['claro', 'light'].includes(theme)) applyTheme('light');
+      else if (['escuro', 'dark'].includes(theme)) applyTheme('dark');
+      else { status('Use /tema claro ou /tema escuro.', 'error'); return true; }
+      status(`Tema ${state.theme === 'light' ? 'claro' : 'escuro'} ativado.`);
+      return true;
+    }
+    if (command === 'cor') {
+      if (!/^#[\da-f]{6}$/i.test(value)) { status('Use /cor #RRGGBB, por exemplo /cor #36d6c2.', 'error'); return true; }
+      preferences.accent = value;
+      document.getElementById('accentColor').value = value;
+      if (savePreferences()) status('Cor personalizada salva neste dispositivo.');
+      return true;
+    }
+    if (command === 'voz') {
+      if (!['pt-BR', 'pt-PT', 'en-US', 'es-ES'].includes(value)) { status('Use /voz pt-BR, /voz pt-PT, /voz en-US ou /voz es-ES.', 'error'); return true; }
+      preferences.speechLanguage = value;
+      document.getElementById('speechLanguage').value = value;
+      loadSpeechVoices();
+      if (savePreferences()) status(`Idioma da voz alterado para ${value}.`);
+      return true;
+    }
+    if (command === 'estilo') {
+      const aliases = { breve: 'concise', curto: 'concise', equilibrado: 'balanced', balanceado: 'balanced', detalhado: 'detailed', codigo: 'code', código: 'code', programacao: 'code', programação: 'code' };
+      const style = aliases[value.toLowerCase()];
+      if (!style) { status('Use /estilo breve, /estilo equilibrado, /estilo detalhado ou /estilo codigo.', 'error'); return true; }
+      preferences.responseStyle = style;
+      document.getElementById('responseStyle').value = style;
+      if (savePreferences()) status(`Estilo de resposta: ${value}.`);
+      return true;
+    }
+    if (command === 'nome') {
+      if (!value || value.length > 32) { status('Informe um nome com até 32 caracteres: /nome Meu Assistente.', 'error'); return true; }
+      preferences.aiName = value;
+      document.getElementById('aiDisplayName').value = value;
+      if (savePreferences()) status(`Nome da IA alterado para ${value}.`);
+      return true;
+    }
+    if (command === 'instrucoes' || command === 'instruções') {
+      if (value.length > 1200) { status('As instruções podem ter no máximo 1.200 caracteres.', 'error'); return true; }
+      preferences.customInstructions = value;
+      document.getElementById('customInstructions').value = value;
+      if (savePreferences()) status(value ? 'Instruções personalizadas salvas.' : 'Instruções personalizadas removidas.');
+      return true;
+    }
+    if (command === 'som') {
+      const setting = value.toLowerCase();
+      if (!['ligar', 'desligar', 'on', 'off'].includes(setting)) { status('Use /som ligar ou /som desligar.', 'error'); return true; }
+      preferences.responseSound = ['ligar', 'on'].includes(setting);
+      updateSoundButton();
+      if (savePreferences()) status(`Som de resposta ${preferences.responseSound ? 'ativado' : 'desativado'}.`);
+      return true;
+    }
+    if (command === 'modelo') {
+      const model = state.models.find(item => item.id.toLowerCase() === value.toLowerCase());
+      if (!model) { status(value ? `Modelo "${value}" não está disponível. Confira a lista no seletor.` : 'Informe o nome de um modelo instalado: /modelo nome.', 'error'); return true; }
+      state.selectedModel = model.id;
+      document.getElementById('modelSelect').value = model.id;
+      status(`Modelo selecionado: ${model.id}.`);
+      return true;
+    }
+    status(`Comando desconhecido: ${rawCommand}. Digite /ajuda para ver os comandos.`, 'error');
+    return true;
+  }
+  function buildPersonalizationPrompt() {
+    const styles = {
+      concise: 'Responda de forma breve e direta, sem perder informações essenciais.',
+      balanced: 'Responda com clareza e equilíbrio, adaptando o nível de detalhe à pergunta.',
+      detailed: 'Explique com detalhes, organize tarefas complexas em etapas e sinalize incertezas.',
+      code: 'Priorize soluções de programação: apresente código legível, explique decisões e indique limitações ou testes necessários.',
+    };
+    const instructions = preferences.customInstructions.trim();
+    return [styles[preferences.responseStyle], instructions].filter(Boolean).join('\n\n').slice(0, 1600);
+  }
   async function sendMessage() {
     const input = document.getElementById('input');
     const text = input.value.trim();
     if (!text) return;
     if (state.generating) return;
+    if (handleChatCommand(text)) {
+      input.value = '';
+      saveDraft('');
+      return;
+    }
     prepareResponseSound();
     input.value = '';
     saveDraft('');
@@ -333,6 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
           message: text,
           provider: state.selectedProvider,
           model: state.selectedModel,
+          systemPrompt: buildPersonalizationPrompt(),
           stream: true,
           requestId,
         }),
@@ -415,6 +511,11 @@ document.addEventListener('DOMContentLoaded', () => {
   inputEl.addEventListener('input', () => saveDraft(inputEl.value));
   const soundButton = document.getElementById('btnSound');
   let responseAudioContext = null;
+  function updateSoundButton() {
+    soundButton.setAttribute('aria-pressed', String(preferences.responseSound));
+    soundButton.setAttribute('aria-label', preferences.responseSound ? 'Desativar som de resposta' : 'Ativar som de resposta');
+    soundButton.textContent = preferences.responseSound ? '🔊 Som' : '🔇 Som';
+  }
   function prepareResponseSound() {
     if (!preferences.responseSound) return;
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -458,14 +559,10 @@ document.addEventListener('DOMContentLoaded', () => {
       voiceCommandStatus.textContent = `Não foi possível tocar o som: ${error.message}`;
     }
   }
-  soundButton.setAttribute('aria-pressed', String(preferences.responseSound));
-  soundButton.setAttribute('aria-label', preferences.responseSound ? 'Desativar som de resposta' : 'Ativar som de resposta');
-  soundButton.textContent = preferences.responseSound ? '🔊 Som' : '🔇 Som';
+  updateSoundButton();
   soundButton.addEventListener('click', () => {
     preferences.responseSound = !preferences.responseSound;
-    soundButton.setAttribute('aria-pressed', String(preferences.responseSound));
-    soundButton.setAttribute('aria-label', preferences.responseSound ? 'Desativar som de resposta' : 'Ativar som de resposta');
-    soundButton.textContent = preferences.responseSound ? '🔊 Som' : '🔇 Som';
+    updateSoundButton();
     if (savePreferences()) voiceCommandStatus.textContent = preferences.responseSound ? 'Som de resposta ativado.' : 'Som de resposta desativado.';
   });
   const chatImageButton = document.getElementById('btnGenerateChatImage');
@@ -739,6 +836,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('accentColor').value = preferences.accent;
   document.getElementById('rgbMode').checked = preferences.rgb;
   document.getElementById('appearanceTheme').value = state.theme;
+  document.getElementById('responseStyle').value = preferences.responseStyle;
+  document.getElementById('customInstructions').value = preferences.customInstructions;
   document.getElementById('aiDisplayName').addEventListener('input', e => {
     preferences.aiName = e.target.value.trim().slice(0, 32) || 'JARVES AI';
     applyPreferences();
@@ -754,6 +853,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('appearanceTheme').addEventListener('change', e => applyTheme(e.target.value));
   document.getElementById('btnSaveAppearance').addEventListener('click', () => {
     if (savePreferences()) document.getElementById('appearanceStatus').textContent = 'Nome, cores e aparência salvos neste dispositivo.';
+  });
+  document.getElementById('btnSaveAiBehavior').addEventListener('click', () => {
+    preferences.responseStyle = document.getElementById('responseStyle').value;
+    preferences.customInstructions = document.getElementById('customInstructions').value.slice(0, 1200);
+    if (savePreferences()) document.getElementById('aiBehaviorStatus').textContent = 'Estilo e instruções salvos neste dispositivo; serão usados nas próximas mensagens.';
   });
   const avatarInput = document.getElementById('aiAvatarInput');
   avatarInput.addEventListener('change', async () => {

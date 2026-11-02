@@ -30,7 +30,6 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ci.yml'
-  workflow_dispatch:
 
 permissions:
   contents: read
