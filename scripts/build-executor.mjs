@@ -25,12 +25,12 @@ replaceOnce('<link rel="icon" href="/assets/icon-192.png">', `<link rel="icon" h
 replaceOnce('<link rel="stylesheet" href="/styles/main.css">', `<style>\n${read(path.join(fe, 'styles/main.css'))}\n</style>`);
 html = html.replace('class="brand" href="/"', 'class="brand" href="#"');
 
-const order = ['api.js', 'state.js', 'ui.js', 'particles.js', 'app.js', 'gerador.js', 'html-tests.js'];
-const tagLine = order.slice(0, 5).map(f => `<script src="/scripts/${f}"></script>`).join('') + '<script src="/scripts/base-engine.js"></script><script src="/scripts/gerador.js"></script><script src="/scripts/html-tests.js"></script>';
+const order = ['api.js', 'state.js', 'ui.js', 'particles.js', 'app.js', 'base-engine.js', 'gerador.js', 'html-tests.js', 'roblox-studio.js'];
+const tagLine = order.map(f => `<script src="/scripts/${f}"></script>`).join('');
 const inline = [
   `<script>\n${safeScript(read(path.join(root, 'executor/base-engine.js')), 'base-engine.js')}\n</script>`,
   `<script>\n${safeScript(read(path.join(root, 'executor/browser-backend.js')), 'browser-backend.js')}\n</script>`,
-  ...order.map(f => `<script>\n${safeScript(read(path.join(fe, 'scripts', f)), f)}\n</script>`),
+  ...order.filter(f => f !== 'base-engine.js').map(f => `<script>\n${safeScript(read(path.join(fe, 'scripts', f)), f)}\n</script>`),
 ].join('\n');
 replaceOnce(tagLine, inline);
 
