@@ -253,6 +253,13 @@ public class MainActivity extends Activity {
         brand.setTextColor(0xFFFFFFFF);
         brand.setTextSize(16);
         toolbar.addView(brand, new LinearLayout.LayoutParams(0, -2, 1));
+        android.widget.Button localAiButton = new android.widget.Button(this);
+        localAiButton.setText("IA local");
+        localAiButton.setOnClickListener(v -> {
+            stopDiscovery();
+            startActivity(new Intent(this, LocalAiActivity.class));
+        });
+        toolbar.addView(localAiButton, new LinearLayout.LayoutParams(-2, -2));
         android.widget.Button serverButton = new android.widget.Button(this);
         serverButton.setText("Servidor");
         serverButton.setOnClickListener(v -> showServerDialog());
