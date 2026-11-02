@@ -45,6 +45,22 @@ function runMigrations(database) {
       throw e;
     }
   }
+  configureMemorySearch(database);
+}
+
+function configureMemorySearch(database) {
+  database.exec('BEGIN');
+  try {
+    database.exec(MEMORY_FTS);
+    database.exec('COMMIT');
+  } catch (error) {
+    database.exec('ROLLBACK');
+    if (/no such module:\s*fts5/i.test(error.message || '')) {
+      console.warn('SQLite FTS5 is unavailable; memory search is using the LIKE fallback.');
+      return;
+    }
+    throw error;
+  }
 }
 
 const MIGRATION_001 = `
@@ -86,6 +102,9 @@ CREATE TABLE IF NOT EXISTS memories (
   updated_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_memories_kind ON memories(kind);
+`;
+
+const MEMORY_FTS = `
 CREATE VIRTUAL TABLE IF NOT EXISTS memories_fts USING fts5(content, subject, tags, content='memories', content_rowid='rowid');
 CREATE TRIGGER IF NOT EXISTS memories_ai AFTER INSERT ON memories BEGIN
   INSERT INTO memories_fts(rowid, content, subject, tags) VALUES (new.rowid, new.content, new.subject, new.tags);
