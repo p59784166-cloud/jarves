@@ -1,4 +1,4 @@
-# JARVES AI 2.3.7 — GitHub + Android
+# JARVES AI 2.3.8 — Roblox Studio + GitHub + Android
 
 Repositorio-fonte preparado a partir do pacote Windows enviado.
 
@@ -9,6 +9,8 @@ Repositorio-fonte preparado a partir do pacote Windows enviado.
 - Cliente Android WebView em `android/`.
 - GitHub Actions compilam APK, EXE e AppImage como artefatos. Ao enviar uma tag `v*`, os três arquivos são anexados à Release correspondente no GitHub.
 - **Arquivos e código** importa arquivos locais e baixa arquivos de links HTTP/HTTPS públicos; os bytes são preservados e os downloads respeitam o limite configurado para uploads.
+- A integração Roblox Studio usa um plugin local e uma fila autenticada em loopback. Cada script exige aprovação dentro do Studio antes de ser inserido; o JARVES não executa código Luau.
+- Roblox Studio é oficialmente disponível para Windows e macOS. No Linux, executar via Wine é uma alternativa não oficial, sem garantia de compatibilidade.
 
 ## Executar o servidor
 Requisitos: Node.js 22.13 ou superior.
@@ -39,9 +41,9 @@ A descoberta usa mDNS (`_jarves._tcp`) e só é anunciada quando o backend escut
 ## Gerar APK pelo GitHub
 1. Envie todos os arquivos desta pasta para [`p59784166-cloud/jarves`](https://github.com/p59784166-cloud/jarves).
 2. Abra **Actions** e execute **Build JARVES Android APK** (workflow_dispatch). Pushes com mudanças Android, frontend, backend ou motores de IA também compilam o APK como artefato do workflow.
-3. Baixe `JARVES-AI-2.3.7-Android-APK` na seção Artifacts da execução.
-4. Para publicar o APK em Releases, crie e envie uma tag `v2.3.7`:
-   `git tag v2.3.7 && git push origin v2.3.7`
+3. Baixe `JARVES-AI-2.3.8-Android-APK` na seção Artifacts da execução.
+4. Para publicar o APK em Releases, crie e envie uma tag `v2.3.8`:
+   `git tag v2.3.8 && git push origin v2.3.8`
 
 A página local de downloads está em `/download.html` quando o servidor JARVES está em execução. Após publicar os arquivos e concluir o workflow **Publish JARVES downloads site**, o site do GitHub Pages será `https://p59784166-cloud.github.io/jarves/`. A página consulta as Releases desse repositório e só habilita botões depois de encontrar os assets reais `app-debug.apk`, `JARVES-AI-Setup-<versão>-x64.exe` e `JARVES-AI-<versão>-x86_64.AppImage`. Os workflows de Android, Windows e Linux anexam seus instaladores à Release quando uma tag `v*` é enviada. O APK é uma compilação de depuração; o EXE não é assinado. O repositório alvo ainda precisa receber o código e a primeira Release antes que esse link ofereça downloads.
 
@@ -51,9 +53,19 @@ A página local de downloads está em `/download.html` quando o servidor JARVES 
 - O instalador ainda não tem assinatura de código; o Windows pode mostrar avisos do SmartScreen.
 
 ## Gerar AppImage para Linux
-- Requer Node.js 22.13+; execute `npm ci` e `npm run build:linux` para criar `dist/JARVES-AI-2.3.7-x86_64.AppImage`.
+- Requer Node.js 22.13+; execute `npm ci` e `npm run build:linux` para criar `dist/JARVES-AI-2.3.8-x86_64.AppImage`.
 - O workflow **Build JARVES Linux AppImage** gera o mesmo pacote x86_64, publica-o como artefato do Actions e o anexa à Release nas tags `v*`.
 - Os pacotes Electron incluem o diretório `executor/`, usado pelo provedor de IA, e usam ícones de aplicativo específicos para Linux e Windows. O APK inclui ícones de launcher em todas as densidades Android.
+
+## Conectar ao Roblox Studio
+1. Inicie o JARVES Desktop e abra **Ferramentas → Roblox Studio**. Gere um token e copie o endereço e o token mostrados.
+2. No Roblox Studio, crie um Script temporário em `ServerStorage`, cole o conteúdo de `frontend/roblox-plugin/JARVESStudioPlugin.lua`, selecione-o no Explorer e escolha **Plugins → Save as Local Plugin**. Apague o Script temporário depois de salvar o plugin.
+3. Na aba **Plugins**, abra **JARVES Studio Bridge**, cole o endereço local e o token e conecte. O Studio pode pedir permissão para HTTP local; permita se quiser usar a ponte.
+4. No JARVES, cole o código Luau revisado, escolha o destino e envie. Confira a prévia e clique em **Insert into Studio** no plugin. Salve o projeto Roblox manualmente.
+
+O token é aleatório, aceito somente por conexões de loopback, mantido em memória e invalidado ao reiniciar o JARVES ou gerar outro token. A fila não persiste após reiniciar. Só são permitidos `Script` em `ServerScriptService`, `LocalScript` em `StarterPlayerScripts` e `ModuleScript` em `ReplicatedStorage`; a ponte não executa código no JARVES.
+
+A Roblox documenta Studio para Windows e macOS, não Linux. No Linux, só é possível tentar executar Studio por Wine ou outra camada de compatibilidade não oficial; a ponte do JARVES não instala nem oferece suporte oficial ao Roblox Studio para Linux.
 
 ## Interface, voz e correção assistida
 - O Chat reúne acesso ao Gerador, Voz e vídeo, Testes HTML, Relatórios, Agentes, Tarefas, Arquivos, Memória e Configurações no painel **Ferramentas**.

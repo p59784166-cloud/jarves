@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.8
+- Nova ponte local com Roblox Studio usando plugin Luau, token temporario e fila limitada; insercoes exigem aprovacao manual dentro do Studio.
+- Documentada a limitação oficial do Roblox Studio no Linux; uso via Wine permanece não oficial.
+- Corrigida a validação de loopback para aceitar conexões IPv4 e IPv6 locais na ponte Roblox.
+- Builds e artefatos APK, EXE e AppImage passam a usar a versão do `package.json`; Android atualizado para versionCode 238.
+- Novo workflow de CI executa verificação de sintaxe e testes antes da publicação.
+
 ## 2.3.0+executor-2
 - Executor HTML: quando o Ollama falha, o aviso agora distingue "desligado" de "ligado mas bloqueado pelo navegador (CORS)", mostra o
   comando exato para Linux/Windows/Mac e oferece "Usar modo demonstracao". Seletor de modelo mostra "sem modelos" em vez de ficar vazio.

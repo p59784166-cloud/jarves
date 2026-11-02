@@ -1,6 +1,6 @@
 {
   "name": "jarves-ai",
-  "version": "2.3.7",
+  "version": "2.3.8",
   "description": "JARVES AI multiplataforma com diagnóstico, testes HTML e cliente Android",
   "type": "module",
   "main": "desktop/main.cjs",
