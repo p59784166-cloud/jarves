@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.4.1
+- Menu lateral simplificado; as ferramentas agora são acessadas pelo painel Atalhos no Chat.
+- Geração de imagens PNG integrada à conversa pelo Automatic1111/Forge local, com prévia e download em 512, 768 ou 1024 px.
+- Som curto opcional ao terminar uma resposta, com preferência salva localmente.
+- Atualizados os ícones do aplicativo Android, desktop e site com a arte oficial JARVES.
+- Melhorados os controles acessíveis do menu móvel e adicionada a arte completa ao site BAXAI.
+
 ## 2.4.0
 - APK Android passa a oferecer chat com inferência real no próprio aparelho via LiteRT-LM, sem depender de um PC.
 - Adicionado download retomável e validação SHA-256 do modelo Gemma 4 E2B Apache-2.0; o download de 2,59 GB é feito após confirmação da pessoa.

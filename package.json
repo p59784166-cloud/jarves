@@ -1,6 +1,6 @@
 {
   "name": "jarves-ai",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "JARVES AI multiplataforma com IA local Android, diagnóstico e ferramentas",
   "type": "module",
   "main": "desktop/main.cjs",

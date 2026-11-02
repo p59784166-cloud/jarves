@@ -1,4 +1,4 @@
-# JARVES AI 2.4.0 — IA local Android + Roblox Studio
+# JARVES AI 2.4.1 — IA local Android + Roblox Studio
 
 Repositorio-fonte preparado a partir do pacote Windows enviado.
 
@@ -10,6 +10,7 @@ Repositorio-fonte preparado a partir do pacote Windows enviado.
 - GitHub Actions compilam APK, EXE e AppImage como artefatos. Ao enviar uma tag `v*`, os três arquivos são anexados à Release correspondente no GitHub.
 - **Arquivos e código** importa arquivos locais e baixa arquivos de links HTTP/HTTPS públicos; os bytes são preservados e os downloads respeitam o limite configurado para uploads.
 - A integração Roblox Studio usa um plugin local e uma fila autenticada em loopback. Cada script exige aprovação dentro do Studio antes de ser inserido; o JARVES não executa código Luau.
+- Ferramentas ficam no painel **Atalhos** do Chat; a geração de PNG usa um modelo Automatic1111/Forge local configurado pelo usuário. Um som curto opcional avisa quando a resposta termina.
 - Roblox Studio é oficialmente disponível para Windows e macOS. No Linux, executar via Wine é uma alternativa não oficial, sem garantia de compatibilidade.
 
 ## Executar o servidor
@@ -52,9 +53,8 @@ A descoberta usa mDNS (`_jarves._tcp`) e só é anunciada quando o backend escut
 ## Gerar APK pelo GitHub
 1. Envie todos os arquivos desta pasta para [`p59784166-cloud/jarves`](https://github.com/p59784166-cloud/jarves).
 2. Abra **Actions** e execute **Build JARVES Android APK** (workflow_dispatch). Pushes com mudanças Android, frontend, backend ou motores de IA também compilam o APK como artefato do workflow.
-3. Baixe `JARVES-AI-2.4.0-Android-APK` na seção Artifacts da execução.
-4. Para publicar o APK em Releases, crie e envie uma tag `v2.4.0`:
-   `git tag v2.4.0 && git push origin v2.4.0`
+3. Baixe o APK Android nos Artifacts da execução.
+4. Para publicar o APK em Releases, crie e envie uma tag da versão atual do app.
 
 A página local de downloads está em `/download.html` quando o servidor JARVES está em execução. Após publicar os arquivos e concluir o workflow **Publish JARVES downloads site**, o site do GitHub Pages será `https://p59784166-cloud.github.io/jarves/`. A página consulta as Releases desse repositório e só habilita botões depois de encontrar os assets reais `app-debug.apk`, `JARVES-AI-Setup-<versão>-x64.exe` e `JARVES-AI-<versão>-x86_64.AppImage`. Os workflows de Android, Windows e Linux anexam seus instaladores à Release quando uma tag `v*` é enviada. O APK é uma compilação de depuração; o EXE não é assinado. O repositório alvo ainda precisa receber o código e a primeira Release antes que esse link ofereça downloads.
 
@@ -64,7 +64,7 @@ A página local de downloads está em `/download.html` quando o servidor JARVES 
 - O instalador ainda não tem assinatura de código; o Windows pode mostrar avisos do SmartScreen.
 
 ## Gerar AppImage para Linux
-- Requer Node.js 22.13+; execute `npm ci` e `npm run build:linux` para criar `dist/JARVES-AI-2.4.0-x86_64.AppImage`.
+- Requer Node.js 22.13+; execute `npm ci` e `npm run build:linux` para criar `dist/JARVES-AI-2.4.1-x86_64.AppImage`.
 - O workflow **Build JARVES Linux AppImage** gera o mesmo pacote x86_64, publica-o como artefato do Actions e o anexa à Release nas tags `v*`.
 - Os pacotes Electron incluem o diretório `executor/`, usado pelo provedor de IA, e usam ícones de aplicativo específicos para Linux e Windows. O APK inclui ícones de launcher em todas as densidades Android.
 
