@@ -57,11 +57,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sidebar toggle
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
-  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); document.getElementById('btnMenu').setAttribute('aria-expanded', 'true'); }
-  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); document.getElementById('btnMenu').setAttribute('aria-expanded', 'false'); }
-  document.getElementById('btnMenu').addEventListener('click', openSidebar);
-  document.getElementById('btnCloseSidebar').addEventListener('click', closeSidebar);
-  overlay.addEventListener('click', closeSidebar);
+  const menuButton = document.getElementById('btnMenu');
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+    menuButton.setAttribute('aria-expanded', 'true');
+    document.getElementById('btnCloseSidebar').focus();
+  }
+  function closeSidebar(restoreFocus = false) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+    menuButton.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) menuButton.focus();
+  }
+  function handleSidebarKeydown(event) {
+    if (event.key === 'Escape' && sidebar.classList.contains('open')) {
+      closeSidebar(true);
+    }
+  }
+  menuButton.addEventListener('click', openSidebar);
+  document.getElementById('btnCloseSidebar').addEventListener('click', () => closeSidebar(true));
+  overlay.addEventListener('click', () => closeSidebar(true));
+  document.addEventListener('keydown', handleSidebarKeydown);
 
   // View switching
   function setView(v) {
@@ -120,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
     btn.addEventListener('click', () => { setView(btn.dataset.view); closeSidebar(); });
   });
+  document.querySelector('.nav-btn[href="/download.html"]')?.addEventListener('click', () => closeSidebar());
   document.getElementById('btnChatTools').addEventListener('click', () => {
     const panel = document.getElementById('chatTools');
     panel.hidden = !panel.hidden;
