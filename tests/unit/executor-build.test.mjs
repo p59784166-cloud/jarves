@@ -14,7 +14,7 @@ test('JARVES_EXECUTOR.html e gerado como arquivo unico, sem referencias externas
   assert.ok(html.includes('jarves-executor'), 'backend de navegador embutido');
   assert.ok(html.includes('id="chatArea"'), 'interface embutida');
   // Includes generated preview scripts as strings embedded in the base engine.
-  assert.equal((html.match(/<script>/g) || []).length, 18);
+  assert.equal((html.match(/<script>/g) || []).length, 19);
   assert.ok(html.includes('JARVES_BASE'), 'IA base embutida');
 });
 
