@@ -33,6 +33,7 @@ jobs:
           cp frontend/download.html public/index.html
           cp frontend/assets/icon-192.png public/assets/icon-192.png
           cp frontend/assets/icon-512.png public/assets/icon-512.png
+          cp frontend/assets/JERVER_AI_V1000_ICON_ARTWORK.png public/assets/JERVER_AI_V1000_ICON_ARTWORK.png
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload site
