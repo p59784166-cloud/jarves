@@ -22,6 +22,9 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />
+        <activity
+            android:name=".LocalAiActivity"
+            android:exported="false" />
         <activity-alias
             android:name=".DefaultLauncher"
             android:targetActivity=".MainActivity"
