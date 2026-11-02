@@ -69,6 +69,11 @@ const api = {
   lastDiagnostics: () => request('/api/diagnostics/last'),
   imageGeneratorStatus: () => request('/api/images/status'),
   generateImage: (payload) => request('/api/images/generate', { method: 'POST', body: payload }),
+  robloxPair: () => request('/api/roblox/pair', { method: 'POST', body: {} }),
+  robloxStatus: (token) => request('/api/roblox/status', { headers: { 'X-Jarves-Bridge-Token': token } }),
+  robloxQueue: (token, payload) => request('/api/roblox/queue', { method: 'POST', headers: { 'X-Jarves-Bridge-Token': token }, body: payload }),
+  robloxNext: (token) => request('/api/roblox/next', { headers: { 'X-Jarves-Bridge-Token': token } }),
+  robloxAcknowledge: (token, id, action) => request('/api/roblox/ack', { method: 'POST', headers: { 'X-Jarves-Bridge-Token': token }, body: { id, action } }),
   exportDiagnostics: (format) => '/api/diagnostics/export?format=' + encodeURIComponent(format),
 };
 window.api = api;

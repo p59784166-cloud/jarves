@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tasks: 'Tarefas',
       files: 'Arquivos e código',
       memory: 'Memória',
+      'roblox-studio': 'Roblox Studio',
     };
     if (viewTitles[v]) document.getElementById('convTitle').textContent = viewTitles[v];
     else if (state.currentConversationId !== null) {
@@ -113,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (v === 'html-tests') loadDiagnostics();
     if (v === 'diagnostics') loadDiagnostics();
     if (v === 'reports') loadReports();
+    if (v === 'roblox-studio') window.jarvesRobloxStudio?.refresh();
   }
   window.jarvesSetView = setView;
   document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
