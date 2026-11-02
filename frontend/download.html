@@ -34,18 +34,21 @@
     .wrap { width: min(1100px, 100% - 32px); margin: 0 auto; padding: 28px 0 72px; }
     header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
     .brand { display: flex; gap: 10px; align-items: center; color: #fff; text-decoration: none; font-weight: 800; letter-spacing: .08em; }
-    .brand img { width: 42px; height: 42px; border-radius: 12px; }
+    .brand img { width: 42px; height: 42px; border: 1px solid #36d6c280; border-radius: 13px; object-fit: cover; }
     .back { border: 1px solid #ffffff30; border-radius: 999px; padding: 8px 14px; text-decoration: none; }
     .site-nav { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
     .site-nav a { border: 1px solid transparent; border-radius: 999px; padding: 8px 12px; color: var(--muted); text-decoration: none; font-size: .88rem; }
     .site-nav a:hover, .site-nav a:focus-visible { color: #fff; border-color: var(--line); background: #ffffff0a; }
-    .hero { text-align: center; padding: clamp(36px, 8vw, 80px) 0 20px; scroll-margin-top: 24px; }
-    .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .75fr); align-items: center; gap: clamp(24px, 5vw, 64px); padding: clamp(36px, 8vw, 80px) 0 20px; scroll-margin-top: 24px; }
+    .hero-copy { min-width: 0; }
+    .hero-art { position: relative; width: min(100%, 360px); aspect-ratio: 1; justify-self: center; margin: 0; overflow: hidden; border: 1px solid #36d6c280; border-radius: 28px; background: #080d1a; box-shadow: 0 24px 70px #0008, 0 0 45px #36d6c225; }
+    .hero-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .hero-actions { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px; margin-top: 20px; }
     .hero-actions a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: 0 17px; border: 1px solid var(--line); border-radius: 12px; color: var(--text); font-weight: 700; text-decoration: none; }
     .hero-actions a:first-child { border-color: transparent; background: linear-gradient(110deg, #5d74f2, #36b8c2); }
     .eyebrow { color: var(--accent); font-size: .72rem; font-weight: 800; letter-spacing: .18em; }
     h1 { margin: 8px 0; font-size: clamp(2.1rem, 7vw, 4.2rem); letter-spacing: -.05em; line-height: 1.05; }
-    .intro { max-width: 640px; margin: 0 auto; color: var(--muted); }
+    .intro { max-width: 640px; margin: 0; color: var(--muted); }
     .notice, .card, .reqs {
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -77,7 +80,15 @@
     .reqs { margin-top: 22px; padding: 20px; }
     .reqs { scroll-margin-top: 24px; }
     footer { margin-top: 28px; text-align: center; color: #7f91b0; font-size: .88rem; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero { grid-template-columns: 1fr; text-align: center; gap: 25px; }
+      .hero-art { width: min(54vw, 240px); }
+      .hero-copy { order: 0; }
+      .hero-art { order: 1; }
+      .intro { margin: 0 auto; }
+      .hero-actions { justify-content: center; }
+    }
     @media (max-width: 560px) {
       .wrap { width: min(100% - 24px, 1100px); padding-top: 16px; }
       header { align-items: flex-start; flex-direction: column; }
@@ -100,14 +111,17 @@
       </nav>
     </header>
     <section class="hero">
-      <p class="eyebrow">CENTRO DE DOWNLOADS · FONTES OFICIAIS</p>
-      <h1>APK, EXE e AppImage</h1>
-      <p class="intro">IA local sem mensalidade e sem chave de API paga. O primeiro download do modelo exige internet; aparelho, energia e dados móveis podem ter custos. Os botões só aparecem quando o GitHub publica um arquivo real na Release.</p>
-      <p id="release-status" role="status" aria-live="polite">Consultando as Releases oficiais…</p>
-      <div class="hero-actions">
-        <a href="#download-options">Escolher meu aplicativo</a>
-        <a href="https://github.com/p59784166-cloud/jarves/releases/latest">Ver Release no GitHub</a>
+      <div class="hero-copy">
+        <p class="eyebrow">CENTRO DE DOWNLOADS · FONTES OFICIAIS</p>
+        <h1>APK, EXE e AppImage</h1>
+        <p class="intro">IA local sem mensalidade e sem chave de API paga. O primeiro download do modelo exige internet; aparelho, energia e dados móveis podem ter custos. Os botões só aparecem quando o GitHub publica um arquivo real na Release.</p>
+        <p id="release-status" role="status" aria-live="polite">Consultando as Releases oficiais…</p>
+        <div class="hero-actions">
+          <a href="#download-options">Escolher meu aplicativo</a>
+          <a href="https://github.com/p59784166-cloud/jarves/releases/latest">Ver Release no GitHub</a>
+        </div>
       </div>
+      <figure class="hero-art"><img src="assets/JERVER_AI_V1000_ICON_ARTWORK.png" alt="Arte oficial JARVES AI V1000"></figure>
     </section>
     <aside class="notice">
       <strong>Sem links inventados</strong>

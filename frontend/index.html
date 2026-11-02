@@ -16,26 +16,13 @@
 <div class="app-shell">
   <aside class="sidebar" id="sidebar" aria-label="Menu principal">
     <div class="sidebar-header">
-      <a class="brand" href="/" aria-label="JARVES AI início"><span class="brand-mark" id="brandMark">J</span><span><b id="brandName">JARVES AI</b><small>2.4.0 · ROBLOX STUDIO</small></span></a>
+      <a class="brand" href="/" aria-label="JARVES AI início"><span class="brand-mark" id="brandMark">J</span><span><b id="brandName">JARVES AI</b><small>2.4.1 · ROBLOX STUDIO</small></span></a>
       <button class="icon-btn mobile-close" id="btnCloseSidebar" aria-label="Fechar menu">×</button>
     </div>
     <nav class="tool-nav primary-nav" aria-label="Navegação principal">
       <button class="nav-btn active" data-view="chat" type="button"><span>✧</span> Chat</button>
       <a class="nav-btn" href="/download.html"><span>⇩</span> Baixar aplicativo</a>
     </nav>
-    <div class="sidebar-section-label">FERRAMENTAS</div>
-    <nav class="tool-nav workspace-nav" aria-label="Ferramentas e espaços">
-      <button class="nav-btn" data-view="gerador" type="button"><span>✦</span> Gerador 2D/3D</button>
-      <button class="nav-btn" data-view="voice-studio" type="button"><span>♫</span> Voz e vídeo</button>
-      <button class="nav-btn" data-view="html-tests" type="button"><span>⌘</span> Testes HTML</button>
-      <button class="nav-btn" data-view="reports" type="button"><span>▤</span> Relatórios</button>
-      <button class="nav-btn" data-view="agents" type="button"><span>✧</span> Agentes</button>
-      <button class="nav-btn" data-view="tasks" type="button"><span>◷</span> Tarefas</button>
-      <button class="nav-btn" data-view="files" type="button"><span>▤</span> Arquivos e código</button>
-      <button class="nav-btn" data-view="memory" type="button"><span>◈</span> Memória</button>
-      <button class="nav-btn" data-view="roblox-studio" type="button"><span>◉</span> Roblox Studio</button>
-    </nav>
-    <div class="sidebar-section-label preferences-label">PREFERÊNCIAS</div>
     <nav class="tool-nav workspace-nav" aria-label="Preferências">
       <button class="nav-btn" data-view="settings" type="button"><span>⚙</span> Configurações</button>
     </nav>
@@ -46,15 +33,15 @@
       <div class="side-label">CONVERSAS</div>
       <nav class="sidebar-nav" id="convList" aria-label="Conversas"></nav>
     </div>
-    <div class="sidebar-bottom"><span class="online-dot"></span><span id="aiRuntimeStatus" role="status">Verificando provedor de IA...</span><small>v2.4.0</small></div>
+    <div class="sidebar-bottom"><span class="online-dot"></span><span id="aiRuntimeStatus" role="status">Verificando provedor de IA...</span><small>v2.4.1</small></div>
   </aside>
-  <button class="overlay" id="overlay" aria-label="Fechar menu"></button>
+  <button class="overlay" id="overlay" aria-label="Fechar menu" aria-hidden="true" tabindex="-1"></button>
   <main class="main">
     <header class="topbar">
-      <div class="topbar-left"><button class="icon-btn menu-btn" id="btnMenu" aria-label="Abrir menu" aria-expanded="false">☰</button><div><div class="topbar-title" id="convTitle">Nova conversa</div><div class="topbar-subtitle" id="providerSubtitle">Seu espaço de inteligência</div></div></div>
+      <div class="topbar-left"><button class="icon-btn menu-btn" id="btnMenu" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">☰</button><div><div class="topbar-title" id="convTitle">Nova conversa</div><div class="topbar-subtitle" id="providerSubtitle">Seu espaço de inteligência</div></div></div>
       <div class="topbar-actions">
         <select id="modelSelect" aria-label="Selecionar modelo"><option value="">Modelo automático</option></select>
-        <button class="secondary-btn" id="btnChatTools" type="button" aria-expanded="false" aria-controls="chatTools">Ferramentas</button>
+        <button class="secondary-btn" id="btnChatTools" type="button" aria-expanded="false" aria-controls="chatTools">Atalhos</button>
         <button class="secondary-btn" id="btnBackToChat" type="button" hidden>← Chat</button>
         <button class="icon-btn" id="btnTheme" aria-label="Alternar tema" title="Alternar tema">◐</button>
         <button class="icon-btn" id="btnClear" aria-label="Limpar tela" title="Limpar tela">⌫</button>
@@ -63,11 +50,12 @@
     </header>
     <section class="view view-chat" id="view-chat">
       <div class="chat-area" id="chatArea" role="log" aria-live="polite">
-        <div class="welcome" id="welcomePanel"><div class="welcome-orb" id="welcomeOrb">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.4.0</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div></div>
+        <div class="welcome" id="welcomePanel"><div class="welcome-orb" id="welcomeOrb">J</div>        <p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.4.1</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div></div>
       </div>
       <section class="chat-tools panel" id="chatTools" aria-label="Ferramentas do Chat" hidden>
         <div class="row html-test-toolbar"><div><h3>Ferramentas do Chat</h3><p class="muted-copy">Abra recursos sem sair do espaço principal do Chat.</p></div><button class="icon-btn" id="btnCloseChatTools" type="button" aria-label="Fechar ferramentas">×</button></div>
         <div class="card-grid chat-tool-grid">
+          <button type="button" data-chat-action="images"><strong>▧ Gerar imagem PNG</strong><small>Crie uma imagem completa com Automatic1111/Forge local</small></button>
           <button type="button" data-chat-tool="gerador"><strong>✦ Gerador 2D/3D</strong><small>SVG, modelos 3D e HTML interativo</small></button>
           <button type="button" data-chat-tool="voice-studio"><strong>♫ Voz e vídeo</strong><small>Narração e prévia de vídeo local</small></button>
           <button type="button" data-chat-tool="html-tests"><strong>⌘ Testes HTML</strong><small>Verificações e diagnóstico do sistema</small></button>
@@ -79,11 +67,24 @@
           <button type="button" data-chat-tool="roblox-studio"><strong>◉ Roblox Studio</strong><small>Conexão local e envio de scripts com aprovação</small></button>
           <button type="button" data-chat-tool="settings"><strong>⚙ Configurações</strong><small>Voz, visual, IA e preferências</small></button>
         </div>
+        <section class="chat-image-tool panel" id="chatImageTool" aria-label="Gerar imagem para a conversa" hidden>
+          <h3>Imagem completa com IA local</h3>
+          <p class="muted-copy">Usa Automatic1111/Forge instalado e configurado no computador. Configure em Atalhos → Gerador 2D/3D → Configurar IA de imagem local. Não chama serviços pagos; a imagem aparece nesta conversa e pode ser baixada como PNG.</p>
+          <label for="chatImagePrompt">Descreva a imagem</label>
+          <textarea id="chatImagePrompt" maxlength="1200" placeholder="Ex.: paisagem cyberpunk à noite, chuva neon, arte digital detalhada"></textarea>
+          <div class="row">
+            <label for="chatImageSize">Resolução
+              <select id="chatImageSize"><option value="512">512 × 512</option><option value="768" selected>768 × 768</option><option value="1024">1024 × 1024</option></select>
+            </label>
+            <button class="primary-btn" id="btnGenerateChatImage" type="button">Gerar imagem</button>
+            <span class="status" id="chatImageStatus" role="status" aria-live="polite"></span>
+          </div>
+        </section>
       </section>
       <div class="suggestions" id="suggestions"></div>
       <div class="composer-wrap"><div class="composer">
         <textarea id="input" placeholder="Envie uma mensagem ao JARVES..." rows="1" aria-label="Mensagem"></textarea>
-        <div class="composer-tools"><span class="composer-hint">Enter envia · Shift + Enter quebra linha · Voz: diga “enviar”, “limpar texto”, “novo chat” ou “parar resposta”</span><div class="composer-actions"><button class="secondary-btn" id="btnVoice" type="button" aria-label="Ditado e comandos de voz: enviar pedido, limpar texto, novo chat ou parar resposta" aria-pressed="false" title="O reconhecimento usa o serviço de voz do navegador ou do Android; internet pode ser necessária.">◖ Voz</button><button class="danger-btn" id="btnStop" type="button" disabled>Parar</button><button class="send-btn" id="btnSend" type="button" aria-label="Enviar mensagem">↑</button></div></div>
+        <div class="composer-tools"><span class="composer-hint">Enter envia · Shift + Enter quebra linha · Voz: diga “enviar”, “limpar texto”, “novo chat” ou “parar resposta”</span><div class="composer-actions"><button class="secondary-btn sound-toggle" id="btnSound" type="button" aria-label="Desativar som de resposta" aria-pressed="true" title="Som curto quando a resposta terminar">🔊 Som</button><button class="secondary-btn" id="btnVoice" type="button" aria-label="Ditado e comandos de voz: enviar pedido, limpar texto, novo chat ou parar resposta" aria-pressed="false" title="O reconhecimento usa o serviço de voz do navegador ou do Android; internet pode ser necessária.">◖ Voz</button><button class="danger-btn" id="btnStop" type="button" disabled>Parar</button><button class="send-btn" id="btnSend" type="button" aria-label="Enviar mensagem">↑</button></div></div>
         <div class="status-bar voice-command-status" id="voiceCommandStatus" role="status" aria-live="polite"></div>
       </div><div class="status-bar" id="statusBar">A IA pode cometer erros. Verifique informações importantes.</div></div>
     </section>
@@ -167,7 +168,7 @@
         <img id="aiAvatarPreview" alt="Prévia da imagem da IA">
         <div class="avatar-setting-controls"><label for="aiAvatarInput">Imagem/avatar da IA</label><input id="aiAvatarInput" type="file" accept="image/png,image/jpeg,image/webp"><p class="muted-copy">Imagem quadrada salva neste dispositivo e exibida no menu e no chat (máx. 5 MB).</p><button class="secondary-btn" id="btnResetAiAvatar" type="button">Usar inicial do nome</button></div>
       </div>
-      <div class="launcher-icon-setting"><label for="launcherIcon">Ícone do APK na tela inicial do Android</label><select id="launcherIcon"><option value="default">JARVES AI · azul</option><option value="robot">JARVES AI · turquesa</option></select><p class="muted-copy">No APK, escolha um dos ícones incluídos. Fora do APK esta opção não fica disponível.</p><div id="launcherIconStatus" class="status" aria-live="polite"></div></div>
+      <div class="launcher-icon-setting"><label for="launcherIcon">Ícone do APK na tela inicial do Android</label><select id="launcherIcon"><option value="default">JARVES AI · arte oficial</option><option value="robot">JARVES AI · arte turquesa</option></select><p class="muted-copy">No APK, escolha uma das versões da arte oficial. Fora do APK esta opção não fica disponível.</p><div id="launcherIconStatus" class="status" aria-live="polite"></div></div>
       <button class="primary-btn" id="btnSaveAppearance" type="button">Salvar aparência</button><div id="appearanceStatus" class="status" aria-live="polite"></div></div>
       <div class="panel" id="androidServerPanel">
         <h3>Servidor para este celular</h3>
