@@ -196,14 +196,14 @@
       }
     }
 
-    fetch(`https://api.github.com/repos/${repository}/releases/latest`, {
-      headers: { Accept: 'application/vnd.github+json' },
+    fetch(`./release-assets.json`, {
+      headers: { Accept: 'application/json' },
       cache: 'no-store',
     }).then(async (response) => {
       if (!response.ok) {
         throw new Error(response.status === 404
-          ? 'Ainda não há Release publicado neste repositório.'
-          : `GitHub respondeu HTTP ${response.status}.`);
+          ? 'A lista de downloads ainda não foi publicada no site.'
+          : `Falha ao carregar a lista de downloads (HTTP ${response.status}).`);
       }
       return response.json();
     }).then((release) => {
