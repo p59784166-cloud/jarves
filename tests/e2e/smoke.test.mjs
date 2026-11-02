@@ -12,17 +12,20 @@ test('frontend index exists and has key controls', () => {
   }
   const navigation = html.match(/<nav class="tool-nav primary-nav"[\s\S]*?<\/nav>/)?.[0] || '';
   assert.deepEqual([...navigation.matchAll(/data-view="([^"]+)"/g)].map(match => match[1]), ['chat']);
-  const workspaceNavigation = html.match(/<nav class="tool-nav workspace-nav" aria-label="Ferramentas e espaços">([\s\S]*?)<\/nav>/)?.[1] || '';
-  assert.deepEqual([...workspaceNavigation.matchAll(/data-view="([^"]+)"/g)].map(match => match[1]), ['gerador', 'voice-studio', 'html-tests', 'reports', 'agents', 'tasks', 'files', 'memory', 'roblox-studio']);
+  assert.doesNotMatch(html, /sidebar-section-label">FERRAMENTAS/);
+  const workspaceNavigation = html.match(/<nav class="tool-nav workspace-nav" aria-label="Preferências">([\s\S]*?)<\/nav>/)?.[1] || '';
+  assert.deepEqual([...workspaceNavigation.matchAll(/data-view="([^"]+)"/g)].map(match => match[1]), ['settings']);
   assert.match(html, /aria-label="Preferências"[\s\S]*data-view="settings"/);
   const chatTools = html.match(/<section class="chat-tools[\s\S]*?<\/section>/)?.[0] || '';
   assert.deepEqual([...chatTools.matchAll(/data-chat-tool="([^"]+)"/g)].map(match => match[1]), ['gerador', 'voice-studio', 'html-tests', 'reports', 'agents', 'tasks', 'files', 'memory', 'roblox-studio', 'settings']);
+  assert.match(chatTools, /data-chat-action="images"/);
+  assert.match(chatTools, /id="chatImagePrompt"[\s\S]*id="btnGenerateChatImage"/);
   for (const id of ['view-roblox-studio','btnRobloxPair','robloxBridgeAddress','robloxBridgeToken','btnCopyRobloxToken','robloxScriptName','robloxScriptTarget','robloxScriptSource','btnQueueRobloxScript']) {
     assert.ok(html.includes(`id="${id}"`), 'missing Roblox Studio control ' + id);
   }
   assert.match(html, /Plugins → Save as Local Plugin/);
   assert.match(html, /Wine não é suportado oficialmente/);
-  for (const id of ['btnChatTools','btnCloseChatTools','btnBackToChat','chatTools','btnVoice','voiceCommandStatus']) assert.ok(html.includes(`id="${id}"`), 'missing unified chat control ' + id);
+  for (const id of ['btnChatTools','btnCloseChatTools','btnBackToChat','chatTools','btnVoice','voiceCommandStatus','btnSound']) assert.ok(html.includes(`id="${id}"`), 'missing unified chat control ' + id);
   assert.match(html, /id="view-html-tests"[\s\S]*id="btnRunHtmlTests"/);
   const generator = fs.readFileSync(path.join(root, 'frontend/scripts/gerador.js'), 'utf8');
   assert.match(generator, /value="modelo-3d"/);
@@ -36,6 +39,9 @@ test('frontend index exists and has key controls', () => {
     assert.ok(html.includes(`id="${id}"`), 'missing preference/diagnostic control ' + id);
   }
   const appScript = fs.readFileSync(path.join(root, 'frontend/scripts/app.js'), 'utf8');
+  assert.match(appScript, /api\.generateImage\(\{ prompt, width: size, height: size, steps: 20 \}\)/);
+  assert.match(appScript, /generated-image-message/);
+  assert.match(appScript, /playResponseSound\(\)/);
   const robloxScript = fs.readFileSync(path.join(root, 'frontend/scripts/roblox-studio.js'), 'utf8');
   const robloxPlugin = fs.readFileSync(path.join(root, 'frontend/roblox-plugin/JARVESStudioPlugin.lua'), 'utf8');
   assert.match(robloxScript, /robloxPair\(\)/);
@@ -111,9 +117,9 @@ test('Android launcher icons target the declared activity and expose only packag
   const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   const androidBuild = fs.readFileSync(path.join(root, 'android/app/build.gradle'), 'utf8');
   const environment = fs.readFileSync(path.join(root, 'backend/config/env.mjs'), 'utf8');
-  assert.equal(packageJson.version, '2.4.0');
-  assert.match(androidBuild, /versionCode 240[\s\S]*versionName '2\.4\.0'/);
-  assert.match(environment, /APP_VERSION = '2\.4\.0'/);
+  assert.equal(packageJson.version, '2.4.1');
+  assert.match(androidBuild, /versionCode 241[\s\S]*versionName '2\.4\.1'/);
+  assert.match(environment, /APP_VERSION = '2\.4\.1'/);
   const manifest = fs.readFileSync(path.join(root, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
   for (const permission of ['INTERNET', 'ACCESS_NETWORK_STATE', 'ACCESS_WIFI_STATE', 'CHANGE_NETWORK_STATE', 'CHANGE_WIFI_MULTICAST_STATE', 'RECORD_AUDIO']) {
     assert.match(manifest, new RegExp(`android:name="android\\.permission\\.${permission}"`));
@@ -160,12 +166,16 @@ test('Android launcher icons target the declared activity and expose only packag
       assert.ok(fs.existsSync(path.join(root, `android/app/src/main/res/mipmap-${density}/${icon}`)), `${density}/${icon}`);
     }
   }
+  for (const icon of ['build/icon.png', 'build/icon.ico', 'frontend/assets/icon-192.png', 'frontend/assets/icon-512.png', 'frontend/assets/JERVER_AI_V1000_ICON_ARTWORK.png']) {
+    assert.ok(fs.existsSync(path.join(root, icon)), `missing branded icon ${icon}`);
+  }
 });
 
 test('GitHub Pages workflow publishes the downloads page as the site root', () => {
   const workflow = fs.readFileSync(path.join(root, '.github/workflows/pages.yml'), 'utf8');
   assert.match(workflow, /branches: \[main\]/);
   assert.match(workflow, /cp frontend\/download\.html public\/index\.html/);
+  assert.match(workflow, /cp frontend\/assets\/JERVER_AI_V1000_ICON_ARTWORK\.png public\/assets\/JERVER_AI_V1000_ICON_ARTWORK\.png/);
   assert.match(workflow, /actions\/upload-pages-artifact@v3/);
   assert.match(workflow, /actions\/deploy-pages@v4/);
 });
