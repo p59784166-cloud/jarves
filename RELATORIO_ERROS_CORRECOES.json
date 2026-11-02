@@ -1,0 +1,47 @@
+{
+  "project": "JARVES AI",
+  "version": "2.3.2",
+  "source_archive": "JARVES_WINDOWS_2_3_1_CORRIGIDO.zip",
+  "archive_integrity": "PASS",
+  "archive_entries": 515,
+  "javascript_files_checked": 47,
+  "javascript_syntax_errors": 0,
+  "findings": [
+    {
+      "severity": "HIGH",
+      "file": "package.json",
+      "finding": "Scripts start/test/lint ausentes apesar de README mandar executa-los.",
+      "resolution": "Scripts start/check/lint/test adicionados; checker Node.js incluído."
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "backend/config/env.mjs, frontend/index.html, frontend/sw.js, executor/browser-backend.js",
+      "finding": "Versões internas inconsistentes e cache PWA ainda identificado como 2.3.0.",
+      "resolution": "Versão sincronizada para 2.3.2 e cache PWA atualizado."
+    },
+    {
+      "severity": "HIGH",
+      "file": "android/",
+      "finding": "O ZIP recebido não continha projeto Android/Gradle nem APK.",
+      "resolution": "Projeto Android WebView e GitHub Actions adicionados para gerar APK automaticamente."
+    },
+    {
+      "severity": "INFO",
+      "file": "tests/",
+      "finding": "O ZIP recebido não continha suíte de testes do projeto.",
+      "resolution": "Testes smoke de saúde/API e manifesto PWA adicionados."
+    }
+  ],
+  "validation": {
+    "zip_test": "PASS",
+    "node_syntax_check": "47/47 PASS",
+    "apk_compilation": "NOT_RUN - ambiente atual sem Gradle/Android SDK; GitHub Actions compila o APK",
+    "runtime_windows": "NOT_RUN - ambiente Linux, executável Windows não iniciado",
+    "smoke_tests": "2/2 PASS (executados com dependencias do pacote original; npm install necessario em clone limpo)"
+  },
+  "limitations": [
+    "O cliente Android conecta-se ao servidor JARVES executado no PC/rede; não incorpora o backend Node.js no APK.",
+    "Para usar no Android, o PC e o telefone precisam estar na mesma rede Wi-Fi e o backend deve aceitar conexões LAN.",
+    "A geração do APK depende da execução do workflow no GitHub Actions."
+  ]
+}

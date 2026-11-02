@@ -1,0 +1,41 @@
+JARVES AI 2.3.2 — RELATORIO DE AUDITORIA E CORRECOES
+====================================================
+ZIP de origem: JARVES_WINDOWS_2_3_1_CORRIGIDO.zip
+Entradas ZIP: 515 | Integridade: PASS
+Arquivos JS verificados: 47 | Erros de sintaxe: 0
+
+PROBLEMAS ENCONTRADOS E TRATADOS
+[HIGH] package.json
+  Problema: Scripts start/test/lint ausentes apesar de README mandar executa-los.
+  Correcao: Scripts start/check/lint/test adicionados; checker Node.js incluído.
+
+[MEDIUM] backend/config/env.mjs, frontend/index.html, frontend/sw.js, executor/browser-backend.js
+  Problema: Versões internas inconsistentes e cache PWA ainda identificado como 2.3.0.
+  Correcao: Versão sincronizada para 2.3.2 e cache PWA atualizado.
+
+[HIGH] android/
+  Problema: O ZIP recebido não continha projeto Android/Gradle nem APK.
+  Correcao: Projeto Android WebView e GitHub Actions adicionados para gerar APK automaticamente.
+
+[INFO] tests/
+  Problema: O ZIP recebido não continha suíte de testes do projeto.
+  Correcao: Testes smoke de saúde/API e manifesto PWA adicionados.
+
+VALIDACAO
+- Integridade do ZIP original: PASS
+- Sintaxe JavaScript: 47/47 PASS
+- Testes smoke: 2/2 PASS (health API/SQLite e manifest PWA; dependencias instaladas)
+- Testes de runtime no clone limpo: executar npm install antes de npm test
+- Compilacao APK: NAO EXECUTADA neste ambiente (sem Gradle/Android SDK)
+- EXE Windows: NAO EXECUTADO neste ambiente Linux
+
+ANDROID / GITHUB
+- Projeto Android WebView incluído em android/
+- Workflow GitHub Actions em .github/workflows/android-apk.yml
+- O workflow compila app-debug.apk e publica como artefato do GitHub Actions.
+- O APK funciona como cliente: requer backend JARVES em um PC/servidor acessível na rede.
+- Configure o servidor para HOST=0.0.0.0 e informe no app o endereço http://IP_DO_PC:3000
+
+LIMITES
+- Não declarar que todos os bugs foram eliminados: apenas os problemas verificáveis listados foram corrigidos.
+- O backend IA/Ollama continua executando no computador/servidor, não dentro do APK.

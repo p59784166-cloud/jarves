@@ -1,0 +1,93 @@
+{
+  "name": "jarves-ai",
+  "version": "2.3.7",
+  "description": "JARVES AI multiplataforma com diagnóstico, testes HTML e cliente Android",
+  "type": "module",
+  "main": "desktop/main.cjs",
+  "desktopName": "JARVES AI",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "bonjour-service": "^1.4.4",
+    "dotenv": "^16.4.5",
+    "express": "^5.0.0"
+  },
+  "productName": "JARVES AI",
+  "author": {
+    "name": "JARVES AI",
+    "email": "jarves-ai@example.com"
+  },
+  "license": "UNLICENSED",
+  "homepage": "https://github.com/p59784166-cloud/jarves",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/p59784166-cloud/jarves.git"
+  },
+  "scripts": {
+    "start": "node backend/server.mjs",
+    "desktop": "electron .",
+    "build:windows": "electron-builder --win nsis --x64 --publish never",
+    "build:linux": "electron-builder --linux AppImage --x64 --publish never",
+    "check": "node scripts/check.mjs",
+    "lint": "node scripts/check.mjs",
+    "test": "node --test"
+  },
+  "build": {
+    "appId": "com.jarves.ai",
+    "productName": "JARVES AI",
+    "directories": {
+      "output": "dist"
+    },
+    "asar": true,
+    "files": [
+      "desktop/**/*",
+      "backend/**/*",
+      "ai/**/*",
+      "database/**/*",
+      "executor/**/*",
+      "frontend/**/*",
+      "build/icon.png",
+      "build/icon.ico",
+      "package.json"
+    ],
+    "icon": "build/icon.png",
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "JARVES-AI-Setup-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Utility",
+      "syncDesktopName": true,
+      "artifactName": "JARVES-AI-${version}-${arch}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0"
+  }
+}
