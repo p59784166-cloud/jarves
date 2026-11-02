@@ -42,7 +42,8 @@ test('frontend index exists and has key controls', () => {
 test('download page only enables APK, EXE, and AppImage downloads from a published GitHub release', () => {
   const html = fs.readFileSync(path.join(root, 'frontend/download.html'), 'utf8');
   assert.match(html, /const repository = 'p59784166-cloud\/jarves'/);
-  assert.equal((html.match(/href="\.\/"/g) || []).length, 2);
+  assert.equal((html.match(/href="\.\/"/g) || []).length, 1);
+  assert.match(html, /href="https:\/\/github\.com\/p59784166-cloud\/jarves">Ver código-fonte/);
   assert.match(html, /Os botões só aparecem quando o GitHub publica um arquivo real na Release/);
   assert.match(html, /WebView[\s\S]*Não executa Ollama no celular/);
   assert.match(html, /Sem links inventados/);
