@@ -12,6 +12,9 @@ test('frontend index exists and has key controls', () => {
   }
   const navigation = html.match(/<nav class="tool-nav primary-nav"[\s\S]*?<\/nav>/)?.[0] || '';
   assert.deepEqual([...navigation.matchAll(/data-view="([^"]+)"/g)].map(match => match[1]), ['chat']);
+  const workspaceNavigation = html.match(/<nav class="tool-nav workspace-nav" aria-label="Ferramentas e espaços">([\s\S]*?)<\/nav>/)?.[1] || '';
+  assert.deepEqual([...workspaceNavigation.matchAll(/data-view="([^"]+)"/g)].map(match => match[1]), ['gerador', 'voice-studio', 'html-tests', 'reports', 'agents', 'tasks', 'files', 'memory', 'roblox-studio']);
+  assert.match(html, /aria-label="Preferências"[\s\S]*data-view="settings"/);
   const chatTools = html.match(/<section class="chat-tools[\s\S]*?<\/section>/)?.[0] || '';
   assert.deepEqual([...chatTools.matchAll(/data-chat-tool="([^"]+)"/g)].map(match => match[1]), ['gerador', 'voice-studio', 'html-tests', 'reports', 'agents', 'tasks', 'files', 'memory', 'roblox-studio', 'settings']);
   for (const id of ['view-roblox-studio','btnRobloxPair','robloxBridgeAddress','robloxBridgeToken','btnCopyRobloxToken','robloxScriptName','robloxScriptTarget','robloxScriptSource','btnQueueRobloxScript']) {
@@ -43,7 +46,7 @@ test('frontend index exists and has key controls', () => {
   assert.match(robloxPlugin, /StarterPlayerScripts/);
   assert.match(robloxPlugin, /ReplicatedStorage/);
   assert.match(appScript, /api\.downloadFile\(url\)/);
-  assert.match(html, /Hospedar o backend e executar a IA dentro do próprio Android ainda não é suportado/);
+  assert.match(html, /IA local do APK executa um modelo no próprio celular, sem PC/);
   for (const command of ['enviar','limpar texto','novo chat','parar resposta']) assert.ok(html.includes(command), `missing voice command hint: ${command}`);
   assert.match(appScript, /connectToServer\(address\)/);
   assert.match(appScript, /androidBridge\.getServerStatus\(\)/);
@@ -57,9 +60,14 @@ test('download page only enables APK, EXE, and AppImage downloads from a publish
   const html = fs.readFileSync(path.join(root, 'frontend/download.html'), 'utf8');
   assert.match(html, /const repository = 'p59784166-cloud\/jarves'/);
   assert.equal((html.match(/href="\.\/"/g) || []).length, 1);
-  assert.match(html, /href="https:\/\/github\.com\/p59784166-cloud\/jarves">Ver código-fonte/);
+  assert.match(html, /href="https:\/\/github\.com\/p59784166-cloud\/jarves">Código<\/a>/);
   assert.match(html, /Os botões só aparecem quando o GitHub publica um arquivo real na Release/);
-  assert.match(html, /WebView[\s\S]*Não executa Ollama no celular/);
+  assert.match(html, /inferência funciona offline[\s\S]*conexão ao servidor JARVES no PC continua opcional/);
+  assert.match(html, /sem mensalidade[\s\S]*sem chave de API paga/);
+  assert.match(html, /hardware, eletricidade e conexão para baixar o modelo não são fornecidos/);
+  assert.match(html, /aria-label="Menu do site"/);
+  assert.match(html, /href="#download-options"/);
+  assert.match(html, /href="https:\/\/github\.com\/p59784166-cloud\/jarves\/releases\/latest"/);
   assert.match(html, /Sem links inventados/);
   assert.match(html, /api\.github\.com\/repos\/\$\{repository\}\/releases\/latest/);
   assert.match(html, /asset\.name === 'app-debug\.apk'/);
@@ -103,9 +111,9 @@ test('Android launcher icons target the declared activity and expose only packag
   const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   const androidBuild = fs.readFileSync(path.join(root, 'android/app/build.gradle'), 'utf8');
   const environment = fs.readFileSync(path.join(root, 'backend/config/env.mjs'), 'utf8');
-  assert.equal(packageJson.version, '2.3.8');
-  assert.match(androidBuild, /versionCode 238[\s\S]*versionName '2\.3\.8'/);
-  assert.match(environment, /APP_VERSION = '2\.3\.8'/);
+  assert.equal(packageJson.version, '2.4.0');
+  assert.match(androidBuild, /versionCode 240[\s\S]*versionName '2\.4\.0'/);
+  assert.match(environment, /APP_VERSION = '2\.4\.0'/);
   const manifest = fs.readFileSync(path.join(root, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
   for (const permission of ['INTERNET', 'ACCESS_NETWORK_STATE', 'ACCESS_WIFI_STATE', 'CHANGE_NETWORK_STATE', 'CHANGE_WIFI_MULTICAST_STATE', 'RECORD_AUDIO']) {
     assert.match(manifest, new RegExp(`android:name="android\\.permission\\.${permission}"`));
@@ -132,6 +140,17 @@ test('Android launcher icons target the declared activity and expose only packag
   assert.match(activity, /startVoiceRecognition\(String language\)/);
   assert.match(activity, /SpeechRecognizer\.createSpeechRecognizer\(this\)/);
   assert.match(activity, /REQUEST_AUDIO_PERMISSION/);
+  assert.match(activity, /LocalAiActivity\.class/);
+  const localAi = fs.readFileSync(path.join(root, 'android/app/src/main/java/com/jarves/ai/LocalAiActivity.kt'), 'utf8');
+  assert.match(localAi, /com\.google\.ai\.edge\.litertlm/);
+  assert.match(localAi, /MODEL_SIZE = 2_588_147_712L/);
+  assert.match(localAi, /181938105e0eefd105961417e8da75903eacda102c4fce9ce90f50b97139a63c/);
+  assert.match(localAi, /Range", "bytes=\$offset-/);
+  assert.match(localAi, /sendMessageAsync\(modelPrompt\)/);
+  assert.match(localAi, /HISTORY_KEY/);
+  assert.match(localAi, /Apache-2\.0/);
+  assert.match(localAi, /SUPPORTED_64_BIT_ABIS/);
+  assert.match(androidBuild, /litertlm-android:0\.19\.0/);
   const discovery = fs.readFileSync(path.join(root, 'backend/services/lanDiscovery.mjs'), 'utf8');
   assert.match(discovery, /type: 'jarves'/);
   assert.match(discovery, /txt: \{ app: 'jarves-ai', version \}/);
