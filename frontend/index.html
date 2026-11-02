@@ -14,14 +14,30 @@
 <canvas id="particles" aria-hidden="true"></canvas>
 <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
 <div class="app-shell">
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" aria-label="Menu principal">
     <div class="sidebar-header">
-      <a class="brand" href="/" aria-label="JARVES AI início"><span class="brand-mark" id="brandMark">J</span><span><b id="brandName">JARVES AI</b><small>2.3.8 · ROBLOX STUDIO</small></span></a>
+      <a class="brand" href="/" aria-label="JARVES AI início"><span class="brand-mark" id="brandMark">J</span><span><b id="brandName">JARVES AI</b><small>2.4.0 · ROBLOX STUDIO</small></span></a>
       <button class="icon-btn mobile-close" id="btnCloseSidebar" aria-label="Fechar menu">×</button>
     </div>
     <nav class="tool-nav primary-nav" aria-label="Navegação principal">
       <button class="nav-btn active" data-view="chat" type="button"><span>✧</span> Chat</button>
       <a class="nav-btn" href="/download.html"><span>⇩</span> Baixar aplicativo</a>
+    </nav>
+    <div class="sidebar-section-label">FERRAMENTAS</div>
+    <nav class="tool-nav workspace-nav" aria-label="Ferramentas e espaços">
+      <button class="nav-btn" data-view="gerador" type="button"><span>✦</span> Gerador 2D/3D</button>
+      <button class="nav-btn" data-view="voice-studio" type="button"><span>♫</span> Voz e vídeo</button>
+      <button class="nav-btn" data-view="html-tests" type="button"><span>⌘</span> Testes HTML</button>
+      <button class="nav-btn" data-view="reports" type="button"><span>▤</span> Relatórios</button>
+      <button class="nav-btn" data-view="agents" type="button"><span>✧</span> Agentes</button>
+      <button class="nav-btn" data-view="tasks" type="button"><span>◷</span> Tarefas</button>
+      <button class="nav-btn" data-view="files" type="button"><span>▤</span> Arquivos e código</button>
+      <button class="nav-btn" data-view="memory" type="button"><span>◈</span> Memória</button>
+      <button class="nav-btn" data-view="roblox-studio" type="button"><span>◉</span> Roblox Studio</button>
+    </nav>
+    <div class="sidebar-section-label preferences-label">PREFERÊNCIAS</div>
+    <nav class="tool-nav workspace-nav" aria-label="Preferências">
+      <button class="nav-btn" data-view="settings" type="button"><span>⚙</span> Configurações</button>
     </nav>
     <button class="primary-btn new-chat" id="btnNewChat"><span>＋</span> Nova conversa</button>
     <div class="history-tools" id="historyTools">
@@ -30,7 +46,7 @@
       <div class="side-label">CONVERSAS</div>
       <nav class="sidebar-nav" id="convList" aria-label="Conversas"></nav>
     </div>
-    <div class="sidebar-bottom"><span class="online-dot"></span><span id="aiRuntimeStatus" role="status">Verificando provedor de IA...</span><small>v2.3.8</small></div>
+    <div class="sidebar-bottom"><span class="online-dot"></span><span id="aiRuntimeStatus" role="status">Verificando provedor de IA...</span><small>v2.4.0</small></div>
   </aside>
   <button class="overlay" id="overlay" aria-label="Fechar menu"></button>
   <main class="main">
@@ -47,7 +63,7 @@
     </header>
     <section class="view view-chat" id="view-chat">
       <div class="chat-area" id="chatArea" role="log" aria-live="polite">
-        <div class="welcome" id="welcomePanel"><div class="welcome-orb" id="welcomeOrb">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.3.8</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div></div>
+        <div class="welcome" id="welcomePanel"><div class="welcome-orb" id="welcomeOrb">J</div><p class="eyebrow"><span id="welcomeAiName">JARVES AI</span> · 2.4.0</p><h1>Como posso ajudar<br><span>você hoje?</span></h1><p class="welcome-copy">Pergunte, crie, programe ou organize suas ideias. Sua próxima descoberta começa aqui.</p><div class="welcome-chips"><button type="button" data-prompt="Explique como você pode me ajudar.">✦ Conhecer o JARVES</button><button type="button" data-prompt="Ajude-me a criar um projeto de software.">⌘ Criar um projeto</button><button type="button" data-prompt="Analise este código e sugira melhorias.">⌁ Analisar código</button></div></div>
       </div>
       <section class="chat-tools panel" id="chatTools" aria-label="Ferramentas do Chat" hidden>
         <div class="row html-test-toolbar"><div><h3>Ferramentas do Chat</h3><p class="muted-copy">Abra recursos sem sair do espaço principal do Chat.</p></div><button class="icon-btn" id="btnCloseChatTools" type="button" aria-label="Fechar ferramentas">×</button></div>
@@ -155,7 +171,7 @@
       <button class="primary-btn" id="btnSaveAppearance" type="button">Salvar aparência</button><div id="appearanceStatus" class="status" aria-live="polite"></div></div>
       <div class="panel" id="androidServerPanel">
         <h3>Servidor para este celular</h3>
-        <p class="muted-copy">O APK funciona como cliente e conecta ao servidor JARVES em outro computador na mesma rede. Hospedar o backend e executar a IA dentro do próprio Android ainda não é suportado; esta configuração não instala nem executa Ollama no telefone.</p>
+        <p class="muted-copy">O botão IA local do APK executa um modelo no próprio celular, sem PC; o primeiro download ocupa 2,59 GB e o aparelho precisa de bastante memória. Esta tela web continua oferecendo conexão opcional ao servidor JARVES/Ollama em outro computador para as ferramentas completas.</p>
         <label for="androidServerUrl">Endereço do servidor JARVES</label>
         <input id="androidServerUrl" type="url" inputmode="url" placeholder="http://192.168.1.10:3000" autocomplete="url">
         <div class="row"><button class="primary-btn" id="btnConnectAndroidServer" type="button">Validar e conectar</button><span id="androidServerStatus" class="status" role="status" aria-live="polite"></span></div>
