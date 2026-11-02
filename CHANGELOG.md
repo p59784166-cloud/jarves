@@ -4,6 +4,7 @@
 - Nova ponte local com Roblox Studio usando plugin Luau, token temporario e fila limitada; insercoes exigem aprovacao manual dentro do Studio.
 - Documentada a limitação oficial do Roblox Studio no Linux; uso via Wine permanece não oficial.
 - Corrigida a validação de loopback para aceitar conexões IPv4 e IPv6 locais na ponte Roblox.
+- SQLite sem FTS5 agora inicializa normalmente e usa a busca de memória por LIKE como fallback.
 - Builds e artefatos APK, EXE e AppImage passam a usar a versão do `package.json`; Android atualizado para versionCode 238.
 - Novo workflow de CI executa verificação de sintaxe e testes antes da publicação.
 
