@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.4.0
+- APK Android passa a oferecer chat com inferência real no próprio aparelho via LiteRT-LM, sem depender de um PC.
+- Adicionado download retomável e validação SHA-256 do modelo Gemma 4 E2B Apache-2.0; o download de 2,59 GB é feito após confirmação da pessoa.
+- Histórico do chat local fica no armazenamento privado do app; modos Chat, Código, Resumo, Tradução e Plano usam o modelo local.
+- Mantida a conexão opcional ao servidor JARVES no PC para acesso à interface web e às ferramentas completas.
+- Atualizado o site de downloads com requisitos de armazenamento/RAM, privacidade e modo offline.
+- Android atualizado para versionCode 240; LiteRT-LM 0.19.0 e Kotlin 2.4.0.
+
 ## 2.3.8
 - Nova ponte local com Roblox Studio usando plugin Luau, token temporario e fila limitada; insercoes exigem aprovacao manual dentro do Studio.
 - Documentada a limitação oficial do Roblox Studio no Linux; uso via Wine permanece não oficial.

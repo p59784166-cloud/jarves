@@ -1,4 +1,4 @@
-# JARVES AI 2.3.8 — Roblox Studio + GitHub + Android
+# JARVES AI 2.4.0 — IA local Android + Roblox Studio
 
 Repositorio-fonte preparado a partir do pacote Windows enviado.
 
@@ -6,7 +6,7 @@ Repositorio-fonte preparado a partir do pacote Windows enviado.
 - Aplicação web JARVES (frontend HTML/CSS/JS + backend Node/Express).
 - Relatório técnico de auditoria em TXT e JSON.
 - Testes smoke e verificação de sintaxe JavaScript.
-- Cliente Android WebView em `android/`.
+- Aplicativo Android com chat local LiteRT-LM e cliente WebView opcional para o servidor do PC.
 - GitHub Actions compilam APK, EXE e AppImage como artefatos. Ao enviar uma tag `v*`, os três arquivos são anexados à Release correspondente no GitHub.
 - **Arquivos e código** importa arquivos locais e baixa arquivos de links HTTP/HTTPS públicos; os bytes são preservados e os downloads respeitam o limite configurado para uploads.
 - A integração Roblox Studio usa um plugin local e uma fila autenticada em loopback. Cada script exige aprovação dentro do Studio antes de ser inserido; o JARVES não executa código Luau.
@@ -25,10 +25,21 @@ HOST=0.0.0.0 npm start
 Abra `http://localhost:3000` no computador.
 
 ## Android
-O APK é um cliente da interface web; ele não hospeda o backend Node/SQLite nem instala Ollama ou um modelo generativo no telefone. O backend e o provedor IA/Ollama continuam no PC/servidor.
+O APK inclui LiteRT-LM e oferece chat com inferência no próprio celular, sem PC e sem chave de API. Os pesos não vêm dentro do APK: no primeiro uso, a pessoa escolhe baixar o Gemma 4 E2B oficial (2.588.147.712 bytes) do Hugging Face. O app valida o SHA-256 do arquivo e mantém o download parcial para retomada.
+
+1. Instale o APK e abra **IA local**.
+2. Toque em **Baixar modelo (2,59 GB)**. Recomenda-se Wi-Fi e pelo menos 3,2 GB livres no armazenamento privado do app.
+3. Após o download, toque em **Iniciar modelo local**. O primeiro carregamento pode levar alguns segundos; recomenda-se aparelho com 6 GB ou mais de RAM.
+4. Selecione Chat, Código, Resumo, Traduzir ou Plano. O chat e seu histórico ficam no telefone; depois de baixar o modelo, a inferência não exige internet.
+
+O modelo selecionado é `litert-community/gemma-4-E2B-it-litert-lm`, licença Apache-2.0, fixado no commit `1caa527c1e88b55f046fcd8d2b4265606680663d`. A versão móvel usa o backend CPU para compatibilidade ampla; velocidade e estabilidade dependem do hardware. O benchmark publicado para um Galaxy S26 Ultra mediu cerca de 1,7 GB de RAM de CPU; aparelhos com pouca memória podem fechar o app ou ficar lentos. O app avisa quando a RAM total está abaixo da recomendação, mas não garante desempenho em todos os celulares.
+
+A inferência local requer Android 64-bit (a biblioteca nativa incluída fornece `arm64-v8a` e `x86_64`). Em aparelhos Android 32-bit, o modo local não fica disponível; o cliente opcional do servidor do PC continua preservado.
+
+O modo **Servidor** continua opcional e conecta a interface web do JARVES/Ollama no PC:
 1. Inicie o JARVES no PC com `HOST=0.0.0.0 npm start` para habilitar o anúncio de descoberta na rede local.
-2. No Android, conecte-se à rede Wi-Fi em que o PC está. O APK procura automaticamente um servidor JARVES anunciado e valida `/api/health`.
-3. Na aba **Configurações** do APK, informe `http://<IP-do-PC>:3000` em **Servidor para este celular** e toque em **Validar e conectar**. O app confirma `/api/health`, salva o endereço e mostra o estado da conexão. Se a descoberta falhar, confira firewall e isolamento de clientes do roteador.
+2. No Android, conecte-se à mesma rede Wi-Fi. O APK procura automaticamente o servidor anunciado e valida `/api/health`.
+3. Em Configurações, informe `http://<IP-do-PC>:3000` se a descoberta falhar.
 
 A descoberta usa mDNS (`_jarves._tcp`) e só é anunciada quando o backend escuta em todas as interfaces ou num endereço local privado. O APK não liga o Wi-Fi nem ingressa numa rede protegida; ambos os aparelhos precisam estar na mesma rede local e a rede deve permitir tráfego entre dispositivos. A versão desktop instalada mantém o backend limitado a `127.0.0.1`; para conectar o APK, inicie o servidor Node em modo LAN conforme o passo 1.
 
@@ -41,9 +52,9 @@ A descoberta usa mDNS (`_jarves._tcp`) e só é anunciada quando o backend escut
 ## Gerar APK pelo GitHub
 1. Envie todos os arquivos desta pasta para [`p59784166-cloud/jarves`](https://github.com/p59784166-cloud/jarves).
 2. Abra **Actions** e execute **Build JARVES Android APK** (workflow_dispatch). Pushes com mudanças Android, frontend, backend ou motores de IA também compilam o APK como artefato do workflow.
-3. Baixe `JARVES-AI-2.3.8-Android-APK` na seção Artifacts da execução.
-4. Para publicar o APK em Releases, crie e envie uma tag `v2.3.8`:
-   `git tag v2.3.8 && git push origin v2.3.8`
+3. Baixe `JARVES-AI-2.4.0-Android-APK` na seção Artifacts da execução.
+4. Para publicar o APK em Releases, crie e envie uma tag `v2.4.0`:
+   `git tag v2.4.0 && git push origin v2.4.0`
 
 A página local de downloads está em `/download.html` quando o servidor JARVES está em execução. Após publicar os arquivos e concluir o workflow **Publish JARVES downloads site**, o site do GitHub Pages será `https://p59784166-cloud.github.io/jarves/`. A página consulta as Releases desse repositório e só habilita botões depois de encontrar os assets reais `app-debug.apk`, `JARVES-AI-Setup-<versão>-x64.exe` e `JARVES-AI-<versão>-x86_64.AppImage`. Os workflows de Android, Windows e Linux anexam seus instaladores à Release quando uma tag `v*` é enviada. O APK é uma compilação de depuração; o EXE não é assinado. O repositório alvo ainda precisa receber o código e a primeira Release antes que esse link ofereça downloads.
 
@@ -53,7 +64,7 @@ A página local de downloads está em `/download.html` quando o servidor JARVES 
 - O instalador ainda não tem assinatura de código; o Windows pode mostrar avisos do SmartScreen.
 
 ## Gerar AppImage para Linux
-- Requer Node.js 22.13+; execute `npm ci` e `npm run build:linux` para criar `dist/JARVES-AI-2.3.8-x86_64.AppImage`.
+- Requer Node.js 22.13+; execute `npm ci` e `npm run build:linux` para criar `dist/JARVES-AI-2.4.0-x86_64.AppImage`.
 - O workflow **Build JARVES Linux AppImage** gera o mesmo pacote x86_64, publica-o como artefato do Actions e o anexa à Release nas tags `v*`.
 - Os pacotes Electron incluem o diretório `executor/`, usado pelo provedor de IA, e usam ícones de aplicativo específicos para Linux e Windows. O APK inclui ícones de launcher em todas as densidades Android.
 
@@ -68,7 +79,7 @@ O token é aleatório, aceito somente por conexões de loopback, mantido em mem�
 A Roblox documenta Studio para Windows e macOS, não Linux. No Linux, só é possível tentar executar Studio por Wine ou outra camada de compatibilidade não oficial; a ponte do JARVES não instala nem oferece suporte oficial ao Roblox Studio para Linux.
 
 ## Interface, voz e correção assistida
-- O Chat reúne acesso ao Gerador, Voz e vídeo, Testes HTML, Relatórios, Agentes, Tarefas, Arquivos, Memória e Configurações no painel **Ferramentas**.
+- O Chat desktop reúne acesso ao Gerador, Voz e vídeo, Testes HTML, Relatórios, Agentes, Tarefas, Arquivos, Memória e Configurações no painel **Ferramentas**. O chat local Android oferece modos Chat, Código, Resumo, Traduzir e Plano.
 - A opção **Unificar conversas** cria um Chat unificado com cópias cronológicas das mensagens de todos os históricos, incluindo o nome de origem; as conversas originais permanecem intactas. Pode ser usada novamente para acrescentar mensagens novas sem duplicar as já importadas.
 - O botão **Voz** no Chat transcreve pedidos e aceita os comandos “enviar”, “limpar texto”, “novo chat” e “parar resposta”. No Android usa o reconhecedor do sistema após pedir permissão de microfone; no navegador depende do suporte e do serviço de voz instalado. O reconhecimento pode exigir internet e não é garantidamente offline; pedidos ditados são transcritos para revisão antes de enviar, exceto quando a pessoa diz “enviar”.
 - Em Configurações é possível personalizar nome da IA, cor principal, efeito RGB, tema, voz/idioma e velocidade/tom da síntese de fala disponíveis no dispositivo. Essas preferências ficam neste dispositivo; síntese e reconhecimento não alteram a voz textual do modelo.
@@ -82,6 +93,6 @@ A Roblox documenta Studio para Windows e macOS, não Linux. No Linux, só é pos
 - Grok não foi adicionado como opção “100% grátis”: a [API oficial xAI](https://docs.x.ai/developers/pricing) publica cobrança por tokens e por imagem. A geração local incluída não chama essa API.
 
 ## Limites conhecidos
-- O APK de depuração é compilado pelo GitHub Actions com Java 17, Android SDK e Gradle 8.9.
+- O APK de depuração é compilado pelo GitHub Actions com Java 17, Android SDK, Gradle 8.9, Kotlin 2.4.0 e LiteRT-LM 0.19.0.
 - O EXE Windows não foi executado neste ambiente Linux.
 - Não é correto afirmar que todos os bugs foram eliminados. Consulte `RELATORIO_ERROS_CORRECOES.txt`.
