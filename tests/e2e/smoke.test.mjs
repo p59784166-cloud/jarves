@@ -150,6 +150,7 @@ test('Android launcher icons target the declared activity and expose only packag
   assert.match(localAi, /HISTORY_KEY/);
   assert.match(localAi, /Apache-2\.0/);
   assert.match(localAi, /SUPPORTED_64_BIT_ABIS/);
+  assert.match(localAi, /addView\(chatMessages, ViewGroup\.LayoutParams/);
   assert.match(androidBuild, /litertlm-android:0\.19\.0/);
   const discovery = fs.readFileSync(path.join(root, 'backend/services/lanDiscovery.mjs'), 'utf8');
   assert.match(discovery, /type: 'jarves'/);
